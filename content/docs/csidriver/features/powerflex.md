@@ -22,8 +22,8 @@ VolumeSnapshotClass instance in `samples/volumesnapshotclass` directory. If need
 apiVersion: snapshot.storage.k8s.io/v1
 kind: VolumeSnapshotClass
 metadata:
-  name: vxflexos-snapclass
-driver: csi-vxflexos.dellemc.com
+  name: powerflex-snapclass
+driver: csi-powerflex.dellemc.com
 # Configure what happens to a VolumeSnapshotContent when the VolumeSnapshot object
 # it is bound to is to be deleted
 # Allowed values:
@@ -41,9 +41,9 @@ apiVersion: snapshot.storage.k8s.io/v1
 kind: VolumeSnapshot
 metadata:
   name: pvol0-snap1
-  namespace: helmtest-vxflexos
+  namespace: helmtest-powerflex
 spec:
-  volumeSnapshotClassName: vxflexos-snapclass
+  volumeSnapshotClassName: powerflex-snapclass
   source:
     persistentVolumeClaimName: pvol0
 ```
@@ -66,9 +66,9 @@ apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: restorepvc
-  namespace: helmtest-vxflexos
+  namespace: helmtest-powerflex
 spec:
-  storageClassName: vxflexos
+  storageClassName: powerflex
   dataSource:
     name: pvol0-snap
     kind: VolumeSnapshot
@@ -89,15 +89,15 @@ kind: DellCsiVolumeGroupSnapshot
 metadata:
   # Name must be 13 characters or less in length
   name: "vg-snaprun1"
-  namespace: "helmtest-vxflexos"
+  namespace: "helmtest-powerflex"
 spec:
   # Add fields here
-  driverName: "csi-vxflexos.dellemc.com"
+  driverName: "csi-powerflex.dellemc.com"
   # defines how to process VolumeSnapshot members when volume group snapshot is deleted
   # "retain" - keep VolumeSnapshot instances
   # "delete" - delete VolumeSnapshot instances
   memberReclaimPolicy: "retain"
-  volumesnapshotclass: "vxflexos-snapclass"
+  volumesnapshotclass: "powerflex-snapclass"
   pvcLabel: "vgs-snap-label"
   # pvcList:
   #   - "pvcName1"
@@ -107,7 +107,7 @@ In the metadata section, the name is limited to 13 characters because the snapsh
 ```
 metadata:
   name: pvol0
-  namespace: helmtest-vxflexos
+  namespace: helmtest-powerflex
   labels:
     volume-group: vgs-snap-label
 ```
@@ -124,9 +124,9 @@ Following is a sample manifest for a storage class that allows for Volume Expans
 apiVersion: storage.k8s.io/v1
 kind: StorageClass
 metadata:
-  name: vxflexos-expand
+  name: powerflex-expand
   annotations:
-provisioner: csi-vxflexos.dellemc.com
+provisioner: csi-powerflex.dellemc.com
 reclaimPolicy: Delete
 allowVolumeExpansion: true
 parameters:
@@ -134,9 +134,9 @@ parameters:
 volumeBindingMode: WaitForFirstConsumer
 allowedTopologies:
 - matchLabelExpressions:
-  - key: csi-vxflexos.dellemc.com/sample
+  - key: csi-powerflex.dellemc.com/sample
     values:
-    - csi-vxflexos.dellemc.com
+    - csi-powerflex.dellemc.com
 ```
 To resize a PVC, edit the existing PVC spec and set _spec.resources.requests.storage_ to the intended size.
 
@@ -148,7 +148,7 @@ spec:
   resources:
     requests:
       storage: 16Gi #update from 8Gi
-  storageClassName: vxflexos
+  storageClassName: powerflex
   volumeMode: Filesystem
   volumeName: k8s-0e50dada
 status:
@@ -171,9 +171,9 @@ kind: PersistentVolumeClaim
 apiVersion: v1
 metadata:
   name: pvol0
-  namespace: helmtest-vxflexos
+  namespace: helmtest-powerflex
 spec:
-  storageClassName: vxflexos
+  storageClassName: powerflex
   accessModes:
   - ReadWriteOnce
   volumeMode: Filesystem
@@ -188,9 +188,9 @@ apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: clonedpvc
-  namespace: helmtest-vxflexos
+  namespace: helmtest-powerflex
 spec:
-  storageClassName: vxflexos
+  storageClassName: powerflex
   dataSource:
     name: pvol0
     kind: PersistentVolumeClaim
@@ -212,7 +212,7 @@ kind: StatefulSet
 apiVersion: apps/v1
 metadata:
     name: powerflextest
-    namespace: helmtest-vxflexos
+    namespace: helmtest-powerflex
 spec:
     ...
     spec:
@@ -230,7 +230,7 @@ spec:
         accessModes:
         - ReadWriteOnce
         volumeMode: Block
-        storageClassName: vxflexos
+        storageClassName: powerflex
         resources:
           requests:
           storage: 8Gi
@@ -249,10 +249,10 @@ The CSI PowerFlex driver version 1.5 and later support additional mkfs format op
 apiVersion: storage.k8s.io/v1
 kind: StorageClass
 metadata:
-  name: vxflexos
+  name: powerflex
   annotations:
     storageclass.kubernetes.io/is-default-class: "true"
-provisioner: csi-vxflexos.dellemc.com
+provisioner: csi-powerflex.dellemc.com
 reclaimPolicy: Delete
 allowVolumeExpansion: true
 parameters:
@@ -262,9 +262,9 @@ parameters:
 volumeBindingMode: WaitForFirstConsumer
 allowedTopologies:
 - matchLabelExpressions:
-  - key: csi-vxflexos.dellemc.com/<SYSTEM_ID> # Insert System ID
+  - key: csi-powerflex.dellemc.com/<SYSTEM_ID> # Insert System ID
     values:
-    - csi-vxflexos.dellemc.com
+    - csi-powerflex.dellemc.com
 
 ```
 - *WARNING*: Before utilizing format options, you must first be fully aware of the potential impact and understand your environment's requirements for the specified option.
@@ -289,26 +289,26 @@ apiVersion: storage.k8s.io/v1
 kind: StorageClass
 metadata:
   annotations:
-    meta.helm.sh/release-name: vxflexos
-    meta.helm.sh/release-namespace: vxflexos
+    meta.helm.sh/release-name: powerflex
+    meta.helm.sh/release-namespace: powerflex
     storageclass.beta.kubernetes.io/is-default-class: "true"
   creationTimestamp: "2020-05-27T13:24:55Z"
   labels:
     app.kubernetes.io/managed-by: Helm
-  name: vxflexos
+  name: powerflex
   resourceVersion: "170198"
-  selfLink: /apis/storage.k8s.io/v1/storageclasses/vxflexos
+  selfLink: /apis/storage.k8s.io/v1/storageclasses/powerflex
   uid: abb094e6-2c25-42c1-b82e-bd80372e78b
 parameters:
   storagepool: pool
-provisioner: csi-vxflexos.dellemc.com
+provisioner: csi-powerflex.dellemc.com
 reclaimPolicy: Delete
 volumeBindingMode: WaitForFirstConsumer
 allowedTopologies:
 - matchLabelExpressions:
-  - key: csi-vxflexos.dellemc.com/6c29fd07674c
+  - key: csi-powerflex.dellemc.com/6c29fd07674c
     values:
-    - csi-vxflexos.dellemc.com
+    - csi-powerflex.dellemc.com
 ```
 For additional information, see the [Kubernetes Topology documentation](https://kubernetes-csi.github.io/docs/topology.html).
 
@@ -330,7 +330,7 @@ replicas: 1
 ```
 in your driver yaml in `config/samples/`
 
-If you want to specify where controller pods get assigned, make the following edits to your values file at `csi-vxflexos/helm/csi-vxflexos/values.yaml`:    
+If you want to specify where controller pods get assigned, make the following edits to your values file at `csi-powerflex/helm/csi-vxflexos/values.yaml`:    
 
 To assign controller pods to worker nodes only (Default):   
 ```
@@ -456,7 +456,7 @@ Here we specify that we want the CSI driver to manage two arrays: one with an IP
 
 To use this config we need to create a Kubernetes secret from it. To do so, run the following command:
 
-`kubectl create secret generic vxflexos-config -n vxflexos --from-file=config=config.yaml`
+`kubectl create secret generic powerflex-config -n powerflex --from-file=config=config.yaml`
 
 ## Dynamic Array Configuration
 
@@ -472,15 +472,15 @@ to
 ```
 Below are sample command lines to delete a secret and create modified properties from file `secret.yaml`.
 ```bash
-kubectl delete secret vxflexos-config  -n vxflexos
-kubectl create secret generic vxflexos-config -n vxflexos --from-file=config=./secret.yaml
+kubectl delete secret powerflex-config  -n powerflex
+kubectl create secret generic powerflex-config -n powerflex --from-file=config=./secret.yaml
 ```
 Dynamic array configuration change detection is only used for properties of an existing array, like username or password.
 To add a new array to the secret, or to alter an array's mdm field, you must run `csi-install.sh` with `--upgrade` option to update the MDM key in secret and restart the node pods.
 ```bash
 cd <DRIVER-HOME>/dell-csi-helm-installer
-./csi-install.sh --upgrade --namespace vxflexos --values ../helm/csi-vxflexos/values.yaml
- kubectl delete  pods --all -n vxflexos
+./csi-install.sh --upgrade --namespace powerflex --values ../helm/csi-powerflex/values.yaml
+ kubectl delete  pods --all -n powerflex
 ```
 
 ### Creating storage classes 
@@ -503,7 +503,7 @@ Starting from version 1.4, CSI PowerFlex driver supports ephemeral inline CSI vo
 
 At runtime, nested inline volumes follow the ephemeral lifecycle of their associated pods where the driver handles all phases of volume operations as pods are created and destroyed.
 
-The following is a sample manifest (found in csi-vxflexos/test/helm/ephemeral) for creating ephemeral volume in pod manifest with CSI PowerFlex driver.
+The following is a sample manifest (found in csi-powerflex/test/helm/ephemeral) for creating ephemeral volume in pod manifest with CSI PowerFlex driver.
 
 ```yaml
 kind: Pod
@@ -523,7 +523,7 @@ spec:
   volumes:
   - name: my-csi-volume
     csi:
-      driver: csi-vxflexos.dellemc.com
+      driver: csi-powerflex.dellemc.com
       fsType: "ext4"
       volumeAttributes:
         volumeName: "my-csi-volume"
@@ -532,7 +532,7 @@ spec:
         systemID: sample
   - name: my-csi-volume-xfs
     csi:
-      driver: csi-vxflexos.dellemc.com
+      driver: csi-powerflex.dellemc.com
       fsType: "xfs"
       volumeAttributes:
         volumeName: "my-csi-volume-xfs"
@@ -543,7 +543,7 @@ spec:
 ```
 
 This manifest creates a pod and attach two newly created ephemeral inline csi volumes to it, one ext4 and the other xfs.  
-To run the corresponding helm test, go to csi-vxflexos/test/helm/ephemeral and fill in the values for storagepool and systemID in sample.yaml.  
+To run the corresponding helm test, go to csi-powerflex/test/helm/ephemeral and fill in the values for storagepool and systemID in sample.yaml.  
 Then run:
 ````
 ./testEphemeral.sh
@@ -570,7 +570,7 @@ logFormat: "TEXT"
 ```
 
 To change the logging fields after the driver is deployed, you can use this command to edit the configmap:  
-` kubectl edit configmap -n vxflexos vxflexos-config-params `  
+` kubectl edit configmap -n powerflex powerflex-config-params `  
 and then make the necessary adjustments for CSI_LOG_LEVEL and CSI_LOG_FORMAT.   
 
 If either option is set to a value outside of what is supported, the driver will use the default values of "debug" and "text" . 

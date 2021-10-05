@@ -142,9 +142,9 @@ karavictl inject [flags]
 
 ##### Examples:
 
-Inject into an existing vxflexos CSI driver
+Inject into an existing powerflex CSI driver
 ```
-kubectl get secrets,deployments,daemonsets -n vxflexos -o yaml \
+kubectl get secrets,deployments,daemonsets -n powerflex -o yaml \
    | karavictl inject --image-addr [IMAGE_REPO]:5000/sidecar-proxy:latest --proxy-host [PROXY_HOST_IP] \
    | kubectl apply -f -
 ```
@@ -152,13 +152,13 @@ kubectl get secrets,deployments,daemonsets -n vxflexos -o yaml \
 ##### Output
 
 ```
-$ kubectl get secrets,deployments,daemonsets -n vxflexos -o yaml \
+$ kubectl get secrets,deployments,daemonsets -n powerflex -o yaml \
 | karavictl inject --image-addr [IMAGE_REPO]:5000/sidecar-proxy:latest --proxy-host [PROXY_HOST_IP] \
 | kubectl apply -f -
 
 secret/karavi-authorization-config created
-deployment.apps/vxflexos-controller configured
-daemonset.apps/vxflexos-node configured
+deployment.apps/powerflex-controller configured
+daemonset.apps/powerflex-node configured
 ```
 
 
@@ -241,7 +241,7 @@ apiVersion: v1
 kind: Secret
 metadata:
   name: proxy-authz-tokens
-  namespace: vxflexos
+  namespace: powerflex
 type: Opaque
 data:
   access: <ACCESS-TOKEN>

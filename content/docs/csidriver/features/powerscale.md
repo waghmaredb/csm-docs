@@ -21,13 +21,13 @@ You can use existent volumes from the PowerScale array as Persistent Volumes in 
 
 1. Open your volume in One FS, and take a note of volume-id.
 2. Create PersistentVolume and use this volume-id as a volumeHandle in the manifest. Modify other parameters according to your needs.
-3. In the following example, the PowerScale cluster accessZone is assumed as 'System', storage class as 'isilon', cluster name as 'pscale-cluster' and volume's internal name as 'isilonvol'. The volume-handle should be in the format of <volume_name>=_=_=<export_id>=_=_=<zone>=_=_=<cluster_name>
+3. In the following example, the PowerScale cluster accessZone is assumed as 'System', storage class as 'powerscale', cluster name as 'pscale-cluster' and volume's internal name as 'powerscalevol'. The volume-handle should be in the format of <volume_name>=_=_=<export_id>=_=_=<zone>=_=_=<cluster_name>
 
 ```yaml
 apiVersion: v1
 kind: PersistentVolume
 metadata:
-  name: isilonstaticpv
+  name: powerscalestaticpv
   namespace: default
 spec:
   capacity:
@@ -35,16 +35,16 @@ spec:
   accessModes:
     - ReadWriteMany
   persistentVolumeReclaimPolicy: Retain
-  storageClassName: isilon
+  storageClassName: powerscale
   csi:
-    driver: csi-isilon.dellemc.com
+    driver: csi-powerscale.dellemc.com
     volumeAttributes:
-        Path: "/ifs/data/csi/isilonvol"
-        Name: "isilonvol"
+        Path: "/ifs/data/csi/powerscalevol"
+        Name: "powerscalevol"
         AzServiceIP: 'XX.XX.XX.XX'
-    volumeHandle: isilonvol=_=_=652=_=_=System=_=_=pscale-cluster
+    volumeHandle: powerscalevol=_=_=652=_=_=System=_=_=pscale-cluster
   claimRef:
-    name: isilonstaticpvc
+    name: powerscalestaticpvc
     namespace: default
 ```
 
@@ -54,7 +54,7 @@ spec:
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: isilonstaticpvc
+  name: powerscalestaticpvc
   namespace: default
 spec:
   accessModes:
@@ -62,8 +62,8 @@ spec:
   resources:
         requests:
           storage: 5Gi
-  volumeName: isilonstaticpv
-  storageClassName: isilon           
+  volumeName: powerscalestaticpv
+  storageClassName: powerscale           
 ```
 
 4. Then use this PVC as a volume in a pod.
@@ -84,7 +84,7 @@ spec:
     volumes:
       - name: pvol
         persistentVolumeClaim:
-            claimName: isilonstaticpvc
+            claimName: powerscalestaticpvc
 ```
 
 5. After the pod becomes `Ready` and `Running`, you can start to use this pod and volume.
@@ -105,7 +105,7 @@ spec:
   resources:
         requests:
           storage: 5Gi
-  storageClassName: isilon           
+  storageClassName: powerscale           
 ```
 
 ## Volume Snapshot Feature
@@ -133,8 +133,8 @@ Following are the manifests for the Volume Snapshot Class:
 apiVersion: snapshot.storage.k8s.io/v1
 kind: VolumeSnapshotClass
 metadata:
-  name: "isilon-snapclass"
-driver: csi-isilon.dellemc.com
+  name: "powerscale-snapclass"
+driver: csi-powerscale.dellemc.com
 #The deletionPolicy of a volume snapshot class can either be Retain or Delete
 #If the deletionPolicy is Delete, then the underlying storage snapshot is deleted along with the VolumeSnapshotContent object.
 #If the deletionPolicy is Retain, then both the underlying snapshot and VolumeSnapshotContent remain
@@ -153,7 +153,7 @@ metadata:
   name: pvcsnap
   namespace: default
 spec:
-  volumeSnapshotClassName: isilon-snapclass
+  volumeSnapshotClassName: powerscale-snapclass
   source:
     persistentVolumeClaimName: testvolume
 ```
@@ -180,7 +180,7 @@ metadata:
   name: createfromsnap
   namespace: default
 spec:
-  storageClassName: isilon
+  storageClassName: powerscale
   dataSource:
     name: pvcsnap
     kind: VolumeSnapshot
@@ -204,10 +204,10 @@ The following is a sample manifest for a storage class that allows for Volume Ex
 apiVersion: storage.k8s.io/v1
 kind: StorageClass
 metadata:
-  name: isilon-expand-sc
+  name: powerscale-expand-sc
   annotations:
     storageclass.beta.kubernetes.io/is-default-class: "false"
-provisioner: "csi-isilon.dellemc.com"
+provisioner: "csi-powerscale.dellemc.com"
 reclaimPolicy: Delete
 parameters:
   ClusterName: <clusterName specified in secret.yaml>
@@ -219,20 +219,20 @@ allowVolumeExpansion: true
 volumeBindingMode: Immediate
 ```
 
-To resize a PVC, edit the existing PVC spec and set spec.resources.requests.storage to the intended size. For example, if you have a PVC isilon-pvc-demo of size 3Gi, then you can resize it to 30Gi by updating the PVC.
+To resize a PVC, edit the existing PVC spec and set spec.resources.requests.storage to the intended size. For example, if you have a PVC powerscale-pvc-demo of size 3Gi, then you can resize it to 30Gi by updating the PVC.
 
 ```yaml
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-    name: isilon-pvc-expansion-demo
+    name: powerscale-pvc-expansion-demo
 spec:
     accessModes:
       - ReadWriteOnce
     resources:
         requests:
             storage: 30Gi # Updated size from 3Gi to 30Gi
-    storageClassName: isilon-expand-sc
+    storageClassName: powerscale-expand-sc
 ```
 
 >The Kubernetes Volume Expansion feature can only be used to increase the size of a volume. It cannot be used to shrink a volume.
@@ -257,7 +257,7 @@ spec:
   resources:
     requests:
       storage: 5Gi
-  storageClassName: isilon
+  storageClassName: powerscale
 ```
 
 The following is a sample manifest for cloning:
@@ -275,7 +275,7 @@ spec:
   resources:
     requests:
       storage: 50Gi
-  storageClassName: isilon
+  storageClassName: powerscale
   dataSource:
     kind: PersistentVolumeClaim
     name: existing-pvc
@@ -328,7 +328,7 @@ spec:
   volumes:
     - name: my-csi-volume
       csi:
-        driver: csi-isilon.dellemc.com
+        driver: csi-powerscale.dellemc.com
         volumeAttributes:
           size: "2Gi"
           ClusterName: "cluster1"
@@ -345,9 +345,9 @@ This covers use cases where:
  
 The CSI PowerScale driver may not be installed or running on some nodes where Users have chosen to restrict the nodes on accessing the PowerScale storage array. 
 
-We support CustomTopology which enables users to apply labels for nodes - "csi-isilon.dellemc.com/XX.XX.XX.XX=csi-isilon.dellemc.com" and expect the labels to be honored by the driver.
+We support CustomTopology which enables users to apply labels for nodes - "csi-powerscale.dellemc.com/XX.XX.XX.XX=csi-powerscale.dellemc.com" and expect the labels to be honored by the driver.
   
-When “enableCustomTopology” is set to “true”, the CSI driver fetches custom labels “csi-isilon.dellemc.com/XX.XX.XX.XX=csi-isilon.dellemc.com” applied on worker nodes, and use them to initialize node pod with custom PowerScale FQDN/IP.
+When “enableCustomTopology” is set to “true”, the CSI driver fetches custom labels “csi-powerscale.dellemc.com/XX.XX.XX.XX=csi-powerscale.dellemc.com” applied on worker nodes, and use them to initialize node pod with custom PowerScale FQDN/IP.
 
 **Note:** Only a single cluster can be configured as part of secret.yaml for custom topology.
 
@@ -363,9 +363,9 @@ To utilize the Topology feature, create a custom `StorageClass` with `volumeBind
 ```yaml
 # This is a sample manifest for utilizing the topology feature and mount options.
 # PVCs created using this storage class will be scheduled 
-# only on the nodes with access to Isilon
+# only on the nodes with access to PowerScale
 
-# Change all instances of <ISILON_IP> to the IP of the PowerScale OneFS API server
+# Change all instances of <POWERSCALE_IP> to the IP of the PowerScale OneFS API server
 
 # Provide mount options through "mountOptions" attribute 
 # to create PVCs with mount options.
@@ -373,8 +373,8 @@ To utilize the Topology feature, create a custom `StorageClass` with `volumeBind
 apiVersion: storage.k8s.io/v1
 kind: StorageClass
 metadata:
-  name: isilon
-provisioner: csi-isilon.dellemc.com
+  name: powerscale
+provisioner: csi-powerscale.dellemc.com
 reclaimPolicy: Delete
 allowVolumeExpansion: true
 parameters:
@@ -387,8 +387,8 @@ parameters:
   # the "Root clients" field (when true) or "Clients" field (when false) of the NFS export 
   RootClientEnabled: "false"
   # Name of PowerScale cluster where pv will be provisioned
-  # This name should match with name of one of the cluster configs in isilon-creds secret
-  # If this parameter is not specified, then default cluster config in isilon-creds secret will be considered if available
+  # This name should match with name of one of the cluster configs in powerscale-creds secret
+  # If this parameter is not specified, then default cluster config in powerscale-creds secret will be considered if available
   #ClusterName: "<cluster_name>"
 
 # volumeBindingMode controls when volume binding and dynamic provisioning should occur.
@@ -400,9 +400,9 @@ volumeBindingMode: WaitForFirstConsumer
 # If enableCustomTopology is set to true in helm values.yaml, then do not specify allowedTopologies
 allowedTopologies:
   - matchLabelExpressions:
-      - key: csi-isilon.dellemc.com/<ISILON_IP>
+      - key: csi-powerscale.dellemc.com/<POWERSCALE_IP>
         values:
-          - csi-isilon.dellemc.com
+          - csi-powerscale.dellemc.com
 
 mountOptions: ["<mountOption1>", "<mountOption2>", ..., "<mountOptionN>"]
 ```
@@ -440,9 +440,9 @@ Similarly, users can define the tolerations based on various conditions like mem
 
 ## Usage of SmartQuotas to Limit Storage Consumption
 
-CSI driver for Dell EMC Isilon handles capacity limiting using SmartQuotas feature.
+CSI driver for Dell EMC PowerScale handles capacity limiting using SmartQuotas feature.
 
-To use the SmartQuotas feature user can specify the boolean value 'enableQuota' in myvalues.yaml or my-isilon-settings.yaml.
+To use the SmartQuotas feature user can specify the boolean value 'enableQuota' in myvalues.yaml or my-powerscale-settings.yaml.
 
 Let us assume the user creates a PVC with 3 Gi of storage and 'SmartQuotas' have already been enabled in PowerScale Cluster.
 
@@ -468,25 +468,25 @@ Let us assume the user creates a PVC with 3 Gi of storage and 'SmartQuotas' have
 This feature is introduced in CSI Driver for PowerScale version 1.6.0 and updated in version 2.0.0
 
 ### Helm based installation
-As part of driver installation, a ConfigMap with the name `isilon-config-params` is created, which contains an attribute `CSI_LOG_LEVEL` which specifies the current log level of CSI driver. 
+As part of driver installation, a ConfigMap with the name `powerscale-config-params` is created, which contains an attribute `CSI_LOG_LEVEL` which specifies the current log level of CSI driver. 
 
 Users can set the default log level by specifying log level to `logLevel` attribute in values.yaml during driver installation.
 
 To change the log level dynamically to a different value user can edit the same values.yaml, and run the following command
 ```
 cd dell-csi-helm-installer
-./csi-install.sh --namespace isilon --values ./my-isilon-settings.yaml --upgrade
+./csi-install.sh --namespace powerscale --values ./my-powerscale-settings.yaml --upgrade
 ```
 
-Note: here my-isilon-settings.yaml is a values.yaml file which user has used for driver installation.  
+Note: here my-powerscale-settings.yaml is a values.yaml file which user has used for driver installation.  
 
 
 ### Operator based installation
-As part of driver installation, a ConfigMap with the name `isilon-config-params` is created using the manifest located in the sample file. This ConfigMap contains an attribute `CSI_LOG_LEVEL` which specifies the current log level of the CSI driver. To set the default/initial log level user can set this field during driver installation.
+As part of driver installation, a ConfigMap with the name `powerscale-config-params` is created using the manifest located in the sample file. This ConfigMap contains an attribute `CSI_LOG_LEVEL` which specifies the current log level of the CSI driver. To set the default/initial log level user can set this field during driver installation.
 
-To update the log level dynamically user has to edit the ConfigMap `isilon-config-params` and update `CSI_LOG_LEVEL` to the desired log level.
+To update the log level dynamically user has to edit the ConfigMap `powerscale-config-params` and update `CSI_LOG_LEVEL` to the desired log level.
 ```
-kubectl edit configmap -n isilon isilon-config-params
+kubectl edit configmap -n powerscale powerscale-config-params
 ```  
 
 >Note: Prior to CSI Driver for PowerScale version 2.0.0, the log level was allowed to be updated dynamically through `logLevel` attribute in the secret object.
@@ -519,7 +519,7 @@ The permissions present in values.yaml are the default for all cluster config.
 
 If the volume permission is not present in storage class then secrets are considered and if it is not present even in secrets then values.yaml is considered.
 
->**Note:** <br>For volume creation from source (volume from snapshot/volume from volume) permissions are inherited from source. <br><br>Create myvalues.yaml/my-isilon-settings.yaml and storage class according to csi-powerscale 2.0
+>**Note:** <br>For volume creation from source (volume from snapshot/volume from volume) permissions are inherited from source. <br><br>Create myvalues.yaml/my-powerscale-settings.yaml and storage class according to csi-powerscale 2.0
 
 ### Operator based installation
 

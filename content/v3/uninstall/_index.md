@@ -10,7 +10,7 @@ description: Methods to uninstall Dell CSI driver
 To uninstall a driver, the `csi-uninstall.sh` script provides a handy wrapper around the `helm` utility. The only required argument for uninstallation is the namespace name. For example, to uninstall the PowerScale driver:
 
 ```
-./csi-uninstall.sh --namespace isilon/<driver-namespace>
+./csi-uninstall.sh --namespace powerscale/<driver-namespace>
 ```
 
 For usage information:

@@ -122,7 +122,7 @@ To perform an offline installation of a Helm chart, the following steps should b
 
     CSI Driver for PowerFlex:
     ```
-    [user@anothersystem /home/user/offline-karavi-observability-bundle/helm]# kubectl get secret vxflexos-config -n [CSI_DRIVER_NAMESPACE] -o yaml | sed 's/namespace: [CSI_DRIVER_NAMESPACE]/namespace: [CSM_NAMESPACE]/' | kubectl create -f -
+    [user@anothersystem /home/user/offline-karavi-observability-bundle/helm]# kubectl get secret powerflex-config -n [CSI_DRIVER_NAMESPACE] -o yaml | sed 's/namespace: [CSI_DRIVER_NAMESPACE]/namespace: [CSM_NAMESPACE]/' | kubectl create -f -
     ```
 
     CSI Driver for PowerStore

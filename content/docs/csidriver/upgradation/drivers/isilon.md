@@ -14,14 +14,14 @@ You can upgrade the CSI Driver for Dell EMC PowerScale using Helm or Dell CSI Op
 
 **Steps**
 1. Verify that all pre-requisites to install CSI Driver for Dell EMC PowerScale version 2.0.0 are fulfilled. Note that change in secret format should be taken care.
-      - Delete the existing secret (isilon-creds and isilon-certs-0)
-      - Create new secrets (isilon-creds and isilon-certs-0)
+      - Delete the existing secret (powerscale-creds and powerscale-certs-0)
+      - Create new secrets (powerscale-creds and powerscale-certs-0)
       Refer Installation section [here](./../../../installation/helm/isilon/#install-the-driver).
-2. Clone the repository https://github.com/dell/csi-powerscale , copy the helm/csi-isilon/values.yaml into a new location with a custom name say _my-isilon-settings.yaml_, to customize settings for installation. Edit _my-isilon-settings.yaml_ as per the requirements.
+2. Clone the repository https://github.com/dell/csi-powerscale , copy the helm/csi-isilon/values.yaml into a new location with a custom name say _my-powerscale-settings.yaml_, to customize settings for installation. Edit _my-powerscale-settings.yaml_ as per the requirements.
 3. Change to directory dell-csi-helm-installer to install the Dell EMC PowerScale `cd dell-csi-helm-installer`
 4. Upgrade the CSI Driver for Dell EMC PowerScale version 2.0.0 using following command:
 
-   `./csi-install.sh --namespace isilon --values ./my-isilon-settings.yaml --upgrade`
+   `./csi-install.sh --namespace powerscale --values ./my-powerscale-settings.yaml --upgrade`
 
 
 ## Upgrade using Dell CSI Operator:

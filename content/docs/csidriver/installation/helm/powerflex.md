@@ -110,7 +110,7 @@ kubectl create -f deploy/kubernetes/snapshot-controller
 **Steps**
 1. Run `git clone https://github.com/dell/csi-powerflex.git` to clone the git repository.
 
-2. Ensure that you have created a namespace where you want to install the driver. You can run `kubectl create namespace vxflexos` to create a new one.
+2. Ensure that you have created a namespace where you want to install the driver. You can run `kubectl create namespace powerflex` to create a new one.
 
 3. Check `helm/csi-vxflexos/driver-image.yaml` and confirm the driver image points to a new image.
 
@@ -163,17 +163,17 @@ kubectl create -f deploy/kubernetes/snapshot-controller
      mdm: "10.0.0.3,10.0.0.4"
     ```
 
-    After editing the file, run the following command to create a secret called `vxflexos-config`:
+    After editing the file, run the following command to create a secret called `powerflex-config`:
     
-    `kubectl create secret generic vxflexos-config -n vxflexos --from-file=config=samples/config.yaml`
+    `kubectl create secret generic powerflex-config -n powerflex --from-file=config=samples/config.yaml`
 
     Use the following command to replace or update the secret:
 
-    `kubectl create secret generic vxflexos-config -n vxflexos --from-file=config=samples/config.yaml -o yaml --dry-run=client | kubectl replace -f -`
+    `kubectl create secret generic powerflex-config -n powerflex --from-file=config=samples/config.yaml -o yaml --dry-run=client | kubectl replace -f -`
 
     *NOTE:* 
 
-    - The user needs to validate the YAML syntax and array-related key/values while replacing the vxflexos-creds secret.
+    - The user needs to validate the YAML syntax and array-related key/values while replacing the powerflex-creds secret.
     - If you want to create a new array or update the MDM values in the secret, you will need to reinstall the driver. If you change other details, such as login information, the secret will dynamically update -- see [dynamic-array-configuration](../../../features/powerflex#dynamic-array-configuration) for more details.
     - Old `json` format of the array configuration file is still supported in this release. If you already have your configuration in `json` format, you may continue to maintain it or you may transfer this configuration to `yaml`
     format and replace/update the secret.  
@@ -202,7 +202,7 @@ kubectl create -f deploy/kubernetes/snapshot-controller
 | enablelistvolumesnapshot | A boolean that, when enabled, will allow list volume operation to include snapshots (since creating a volume from a snap actually results in a new snap). It is recommend this be false unless instructed otherwise. | Yes | false |
 | allowRWOMultiPodAccess | Setting allowRWOMultiPodAccess to "true" will allow multiple pods on the same node to access the same RWO volume. This behavior conflicts with the CSI specification version 1.3. NodePublishVolume description that requires an error to be returned in this case. However, some other CSI drivers support this behavior and some customers desire this behavior. Customers use this option at their own risk. | Yes | false |
 | **controller**           | This section allows the configuration of controller-specific parameters. To maximize the number of available nodes for controller pods, see this section. For more details on the new controller pod configurations, see the [Features section](../../../features/powerflex#controller-ha) for Powerflex specifics.                                                                                                             | -        | -       |
-| volumeNamePrefix | Set so that volumes created by the driver have a default prefix. If one PowerFlex/VxFlex OS system is servicing several different Kubernetes installations or users, these prefixes help you distinguish them. | Yes | "k8s" |
+| volumeNamePrefix | Set so that volumes created by the driver have a default prefix. If one PowerFlex system is servicing several different Kubernetes installations or users, these prefixes help you distinguish them. | Yes | "k8s" |
 | controllerCount | Set to deploy multiple controller instances. If the controller count is greater than the number of available nodes, excess pods remain in a pending state. It should be greater than 0. You can increase the number of available nodes by configuring the "controller" section in your values.yaml. For more details on the new controller pod configurations, see the [Features section](../../../features/powerflex#controller-ha) for Powerflex specifics. | Yes | 2 |
 | snapshot.enabled | A boolean that enable/disable volume snapshot feature. | No | true |
 | resizer.enabled | A boolean that enable/disable volume expansion feature. | No | true |
@@ -223,14 +223,14 @@ kubectl create -f deploy/kubernetes/snapshot-controller
 | image | image for podmon. | No | " " |
 
 
-10. Install the driver using `csi-install.sh` bash script by running `cd ../dell-csi-helm-installer && ./csi-install.sh --namespace vxflexos --values ../helm/myvalues.yaml`
+10. Install the driver using `csi-install.sh` bash script by running `cd ../dell-csi-helm-installer && ./csi-install.sh --namespace powerflex --values ../helm/myvalues.yaml`
 
  *NOTE:*
 - For detailed instructions on how to run the install scripts, refer to the README.md  in the dell-csi-helm-installer folder.
-- Install script will validate MDM IP(s) in `vxflexos-config` secret and creates a new field consumed by the init container and sdc-monitor container
+- Install script will validate MDM IP(s) in `powerflex-config` secret and creates a new field consumed by the init container and sdc-monitor container
 - This install script also runs the `verify.sh` script. You will be prompted to enter the credentials for each of the Kubernetes nodes. 
   The `verify.sh` script needs the credentials to check if SDC has been configured on all nodes. 
-- It is mandatory to run install script after changes to MDM configuration in `vxflexos-config` secret. Refer [dynamic-array-configuration](../../../features/powerflex#dynamic-array-configuration)
+- It is mandatory to run install script after changes to MDM configuration in `powerflex-config` secret. Refer [dynamic-array-configuration](../../../features/powerflex#dynamic-array-configuration)
   
 - (Optional) Enable additional Mount Options - A user is able to specify additional mount options as needed for the driver. 
    - Mount options are specified in storageclass yaml under _mkfsFormatOption_. 
@@ -242,7 +242,7 @@ This topic provides details about setting up the certificate for the CSI Driver 
 
 *Before you begin*
 
-As part of the CSI driver installation, the CSI driver requires a secret with the name vxflexos-certs-0 to vxflexos-certs-n based on the ".Values.certSecretCount" parameter present in the namespace vxflexos.
+As part of the CSI driver installation, the CSI driver requires a secret with the name powerflex-certs-0 to powerflex-certs-n based on the ".Values.certSecretCount" parameter present in the namespace powerflex.
 
 This secret contains the X509 certificates of the CA which signed PowerFlex gateway SSL certificate in PEM format.
 
@@ -250,7 +250,7 @@ The CSI driver exposes an install parameter in config.yaml, `skipCertificateVali
 
 `skipCertificateValidation` parameter is set to true by default, and the driver does not verify the gateway certificates.
 
-If `skipCertificateValidation` is set to false, then the secret vxflexos-certs-n must contain the CA certificate for the array gateway.
+If `skipCertificateValidation` is set to false, then the secret powerflex-certs-n must contain the CA certificate for the array gateway.
 
 If this secret is an empty secret, then the validation of the certificate fails, and the driver fails to start.
 
@@ -264,21 +264,21 @@ If the gateway certificate is self-signed or if you are using an embedded gatewa
 	
 2. Run the following command to create the cert secret with index '0':
 
-         `kubectl create secret generic vxflexos-certs-0 --from-file=cert-0=ca_cert_0.pem -n vxflexos`
+         `kubectl create secret generic powerflex-certs-0 --from-file=cert-0=ca_cert_0.pem -n powerflex`
 	
    Use the following command to replace the secret:
 	
-          `kubectl create secret generic vxflexos-certs-0 -n vxflexos --from-file=cert-0=ca_cert_0.pem -o yaml --dry-run | kubectl replace -f -` 
+          `kubectl create secret generic powerflex-certs-0 -n powerflex --from-file=cert-0=ca_cert_0.pem -o yaml --dry-run | kubectl replace -f -` 
 	
-3. Repeat step 1 and 2 to create multiple cert secrets with incremental index (example: vxflexos-certs-1, vxflexos-certs-2, etc)
+3. Repeat step 1 and 2 to create multiple cert secrets with incremental index (example: powerflex-certs-1, powerflex-certs-2, etc)
 
 
 *Note:*
 	
-- "vxflexos" is the namespace for helm-based installation but namespace can be user-defined in operator-based installation.
+- "powerflex" is the namespace for helm-based installation but namespace can be user-defined in operator-based installation.
 - User can add multiple certificates in the same secret. The certificate file should not exceed more than 1Mb due to Kubernetes secret size limitation.
 - Whenever certSecretCount parameter changes in `myvalues.yaml` user needs to uninstall and install the driver.
-- Updating vxflexos-certs-n secrets is a manual process, unlike vxflexos-config. Users have to re-install the driver in case of updating/adding the SSL certificates or changing the certSecretCount parameter.
+- Updating powerflex-certs-n secrets is a manual process, unlike powerflex-config. Users have to re-install the driver in case of updating/adding the SSL certificates or changing the certSecretCount parameter.
 
 
 

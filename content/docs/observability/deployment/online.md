@@ -120,7 +120,7 @@ To perform an online installation of CSM for Observability, the following steps 
     |
     |- Creating namespace karavi                                        Success
     |
-    |- Copying Secret from vxflexos to karavi                           Success
+    |- Copying Secret from powerflex to karavi                           Success
     |
     |- Installing CertManager CRDs                                      Success
     |
@@ -128,7 +128,7 @@ To perform an online installation of CSM for Observability, the following steps 
     |
     |- Waiting for pods in namespace karavi to be ready                 Success
     |
-    |- Copying Secret from vxflexos to karavi                           Success
+    |- Copying Secret from powerflex to karavi                           Success
     |
     |- Enabling Karavi Authorization for Karavi Observability           Success
     |

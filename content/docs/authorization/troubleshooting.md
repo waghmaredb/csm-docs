@@ -6,9 +6,9 @@ Description: >
   Troubleshooting guide
 ---
 
-- [Running `karavictl inject` leaves the vxflexos-controller in a `Pending` state](#running-karavictl-inject-leaves-the-vxflexos-controller-in-a-pending-state)
+- [Running `karavictl inject` leaves the powerflex-controller in a `Pending` state](#running-karavictl-inject-leaves-the-powerflex-controller-in-a-pending-state)
 - [Running `karavictl inject` leaves the powermax-controller in a `Pending` state](#running-karavictl-inject-leaves-the-powermax-controller-in-a-pending-state)
-- [Running `karavictl inject` leaves the isilon-controller in a `Pending` state](#running-karavictl-inject-leaves-the-isilon-controller-in-a-pending-state)
+- [Running `karavictl inject` leaves the powerscale-controller in a `Pending` state](#running-karavictl-inject-leaves-the-powerscale-controller-in-a-pending-state)
 
 ---
 
@@ -26,17 +26,17 @@ For OPA related logs, run:
 $ k3s kubectl logs deploy/proxy-server -n karavi -c opa
 ```
 
-### Running "karavictl inject" leaves the vxflexos-controller in a "Pending" state
-This situation may occur when the number of vxflexos-controller pods that are deployed is equal to the number of schedulable nodes.
+### Running "karavictl inject" leaves the powerflex-controller in a "Pending" state
+This situation may occur when the number of powerflex-controller pods that are deployed is equal to the number of schedulable nodes.
 ```
-$ kubectl get pods -n vxflexos                                                                  
+$ kubectl get pods -n powerflex                                                                  
 
 NAME                                   READY   STATUS    RESTARTS   AGE
-vxflexos-controller-696cc5945f-4t94d   0/6     Pending   0          3m2s
-vxflexos-controller-75cdcbc5db-k25zx   5/5     Running   0          3m41s
-vxflexos-controller-75cdcbc5db-nkxqh   5/5     Running   0          3m42s
-vxflexos-node-mjc74                    3/3     Running   0          2m44s
-vxflexos-node-zgswp                    3/3     Running   0          2m44s
+powerflex-controller-696cc5945f-4t94d   0/6     Pending   0          3m2s
+powerflex-controller-75cdcbc5db-k25zx   5/5     Running   0          3m41s
+powerflex-controller-75cdcbc5db-nkxqh   5/5     Running   0          3m42s
+powerflex-node-mjc74                    3/3     Running   0          2m44s
+powerflex-node-zgswp                    3/3     Running   0          2m44s
 ```
 
 __Resolution__
@@ -45,7 +45,7 @@ To resolve this issue, we need to temporarily reduce the number of replicas that
 
 1. Edit the deployment
     ```
-    $ kubectl edit -n vxflexos deploy/vxflexos-controller
+    $ kubectl edit -n powerflex deploy/powerflex-controller
     ```
 
 2. Find `replicas` under the `spec` section of the deployment manifest.
@@ -53,12 +53,12 @@ To resolve this issue, we need to temporarily reduce the number of replicas that
 4. Save the file
 5. Confirm that the updated controller pods have been deployed
     ```
-    $ kubectl get pods -n vxflexos                                                                  
+    $ kubectl get pods -n powerflex                                                                  
 
     NAME                                   READY   STATUS    RESTARTS   AGE
-    vxflexos-controller-696cc5945f-4t94d   6/6     Running   0          4m41s
-    vxflexos-node-mjc74                    3/3     Running   0          3m44s
-    vxflexos-node-zgswp                    3/3     Running   0          3m44s
+    powerflex-controller-696cc5945f-4t94d   6/6     Running   0          4m41s
+    powerflex-node-mjc74                    3/3     Running   0          3m44s
+    powerflex-node-zgswp                    3/3     Running   0          3m44s
     ```
 
 6. Edit the deployment again
@@ -67,13 +67,13 @@ To resolve this issue, we need to temporarily reduce the number of replicas that
 9. Save the file
 10. Confirm that the updated controller pods have been deployed
     ```
-    $ kubectl get pods -n vxflexos                                                                  
+    $ kubectl get pods -n powerflex                                                                  
 
     NAME                                   READY   STATUS    RESTARTS   AGE
-    vxflexos-controller-696cc5945f-4t94d   6/6     Running   0          5m41s
-    vxflexos-controller-696cc5945f-6xxhb   6/6     Running   0          5m41s
-    vxflexos-node-mjc74                    3/3     Running   0          4m44s
-    vxflexos-node-zgswp                    3/3     Running   0          4m44s
+    powerflex-controller-696cc5945f-4t94d   6/6     Running   0          5m41s
+    powerflex-controller-696cc5945f-6xxhb   6/6     Running   0          5m41s
+    powerflex-node-mjc74                    3/3     Running   0          4m44s
+    powerflex-node-zgswp                    3/3     Running   0          4m44s
     ```
 
 ### Running "karavictl inject" leaves the powermax-controller in a "Pending" state
@@ -124,17 +124,17 @@ To resolve this issue, we need to temporarily reduce the number of replicas that
     powermax-node-k5gwc                    3/3     Running   3          7m59s
     ```
 
-### Running "karavictl inject" leaves the isilon-controller in a "Pending" state
-This situation may occur when the number of Isilon controller pods that are deployed is equal to the number of schedulable nodes.
+### Running "karavictl inject" leaves the powerscale-controller in a "Pending" state
+This situation may occur when the number of powerscale controller pods that are deployed is equal to the number of schedulable nodes.
 ```
-$ kubectl get pods -n isilon                                                                 
+$ kubectl get pods -n powerscale                                                                 
 
 NAME                                 READY   STATUS    RESTARTS   AGE
-isilon-controller-58d8779f5d-v7t56   0/6     Pending   0          25s
-isilon-controller-78f749847-jqphx    5/5     Running   0          10m
-isilon-controller-78f749847-w6vp5    5/5     Running   0          10m
-isilon-node-gx5pk                    3/3     Running   0          21s
-isilon-node-k5gwc                    3/3     Running   0          17s
+powerscale-controller-58d8779f5d-v7t56   0/6     Pending   0          25s
+powerscale-controller-78f749847-jqphx    5/5     Running   0          10m
+powerscale-controller-78f749847-w6vp5    5/5     Running   0          10m
+powerscale-node-gx5pk                    3/3     Running   0          21s
+powerscale-node-k5gwc                    3/3     Running   0          17s
 ```
 
 __Resolution__
@@ -143,7 +143,7 @@ To resolve this issue, we need to temporarily reduce the number of replicas that
 
 1. Edit the deployment
     ```
-    $ kubectl edit -n <namespace> deploy/isilon-controller
+    $ kubectl edit -n <namespace> deploy/powerscale-controller
     ```
 
 2. Find `replicas` under the `spec` section of the deployment manifest.
@@ -151,12 +151,12 @@ To resolve this issue, we need to temporarily reduce the number of replicas that
 4. Save the file
 5. Confirm that the updated controller pods have been deployed
     ```
-    $ kubectl get pods -n isilon                                                                  
+    $ kubectl get pods -n powerscale                                                                  
 
     NAME                                   READY   STATUS    RESTARTS   AGE
-    isilon-controller-696cc5945f-4t94d   6/6     Running   0          4m41s
-    isilon-node-mjc74                    3/3     Running   0          3m44s
-    isilon-node-zgswp                    3/3     Running   0          3m44s
+    powerscale-controller-696cc5945f-4t94d   6/6     Running   0          4m41s
+    powerscale-node-mjc74                    3/3     Running   0          3m44s
+    powerscale-node-zgswp                    3/3     Running   0          3m44s
     ```
 
 6. Edit the deployment again
@@ -165,10 +165,10 @@ To resolve this issue, we need to temporarily reduce the number of replicas that
 9. Save the file
 10. Confirm that the updated controller pods have been deployed
     ```
-    $ kubectl get pods -n isilon
+    $ kubectl get pods -n powerscale
     NAME                                   READY   STATUS    RESTARTS   AGE
-    isilon-controller-58d8779f5d-cqx8d   6/6     Running   0          22s
-    isilon-controller-58d8779f5d-v7t56   6/6     Running   22         8m7s
-    isilon-node-gx5pk                    3/3     Running   3          8m3s
-    isilon-node-k5gwc                    3/3     Running   3          7m59s
+    powerscale-controller-58d8779f5d-cqx8d   6/6     Running   0          22s
+    powerscale-controller-58d8779f5d-v7t56   6/6     Running   22         8m7s
+    powerscale-node-gx5pk                    3/3     Running   3          8m3s
+    powerscales-node-k5gwc                    3/3     Running   3          7m59s
     ```

@@ -17,12 +17,12 @@ You can upgrade the CSI Driver for Dell EMC PowerFlex using Helm or Dell CSI Ope
    Check this section in installation documentation:  [Install the Driver](../../../installation/helm/powerflex#install-the-driver)
    You must set the only system managed in v1.4/v1.5 driver as default in config.json in v2.0 so that the driver knows the existing volumes belong to that system.
 3. Update values file as needed.
-4. Run the `csi-install` script with the option _\-\-upgrade_ by running: `cd ../dell-csi-helm-installer && ./csi-install.sh --namespace vxflexos --values ./myvalues.yaml --upgrade`.
+4. Run the `csi-install` script with the option _\-\-upgrade_ by running: `cd ../dell-csi-helm-installer && ./csi-install.sh --namespace powerflex --values ./myvalues.yaml --upgrade`.
 
 *NOTE:*
 - If you are upgrading from a driver version that was installed using Helm v2, ensure that you install Helm3 before installing the driver.
 - Installation of the CSI Driver for Dell EMC PowerFlex version 2.0 driver is not supported on Kubernetes upstream clusters running version 1.18 and 1.19. You must upgrade your cluster to 1.20, 1.21 or 1.22 before attempting to install the new version of the driver.(k8s-1.19 is still supported on openshift-4.6)
-- To update any installation parameter after the driver has been installed, change the `myvalues.yaml` file and run the install script with the option _\-\-upgrade_, for example: `./csi-install.sh --namespace vxflexos --values ./myvalues.yaml --upgrade`.
+- To update any installation parameter after the driver has been installed, change the `myvalues.yaml` file and run the install script with the option _\-\-upgrade_, for example: `./csi-install.sh --namespace powerflex --values ./myvalues.yaml --upgrade`.
 - The logging configuration from v1.5 will not work in v2.0, since the log configuration parameters are now set in the values.yaml file located at helm/csi-vxflexos/values.yaml. Please set the logging configuration parameters in the values.yaml file.
 
 ## Upgrade using Dell CSI Operator:

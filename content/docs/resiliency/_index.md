@@ -26,7 +26,7 @@ Accordingly, CSM for Resiliency is adapted to and qualified with each CSI driver
 CSM for Resiliency provides the following capabilities:
 
 {{<table "table table-striped table-bordered table-sm">}}
-| Capability | PowerScale/Isilon | Unity | PowerStore | PowerFlex/VxFlex OS | PowerMax |
+| Capability | PowerScale | Unity | PowerStore | PowerFlex | PowerMax |
 | - | :-: | :-: | :-: | :-: | :-: |
 | Detect pod failures for the following failure types - Node failure, K8S Control Plane Network failure, Array I/O Network failure | no  | yes | no | yes | no |
 | Cleanup pod artifacts from failed nodes | no |  yes | no | yes | no |
@@ -115,11 +115,11 @@ The following provisioning types are supported and have been tested:
  The first thing to remember about _CSM for Resiliency_ is that it only takes action on pods configured with the designated label. Both the key and the value have to match what is in the podmon helm configuration. CSM for Resiliency emits a log message at startup with the label key and value it is using to monitor pods:
 
  ```
- labelSelector: {map[podmon.dellemc.com/driver:csi-vxflexos]
+ labelSelector: {map[podmon.dellemc.com/driver:csi-powerflex]
  ```
- The above message indicates the key is: podmon.dellemc.com/driver and the label value is csi-vxflexos. To search for the pods that would be monitored, try this:
+ The above message indicates the key is: podmon.dellemc.com/driver and the label value is csi-powerflex. To search for the pods that would be monitored, try this:
  ```
-[root@lglbx209 podmontest]# kubectl get pods -A -l podmon.dellemc.com/driver=csi-vxflexos
+[root@lglbx209 podmontest]# kubectl get pods -A -l podmon.dellemc.com/driver=csi-powerflex
 NAMESPACE   NAME           READY   STATUS    RESTARTS   AGE
 pmtu1       podmontest-0   1/1     Running   0          3m7s
 pmtu2       podmontest-0   1/1     Running   0          3m8s

@@ -24,7 +24,7 @@ Copy the config Secret from the Dell CSI Driver namespace into the namespace whe
 ### PowerFlex
 
 ```console
-$ kubectl get secret vxflexos-config -n [CSI_DRIVER_NAMESPACE] -o yaml | sed 's/namespace: [CSI_DRIVER_NAMESPACE]/namespace: [CSM_NAMESPACE]/' | kubectl create -f -
+$ kubectl get secret powerflex-config -n [CSI_DRIVER_NAMESPACE] -o yaml | sed 's/namespace: [CSI_DRIVER_NAMESPACE]/namespace: [CSM_NAMESPACE]/' | kubectl create -f -
 ```
 
 __Note__: The target namespace must exist before executing this command.
@@ -59,7 +59,7 @@ The following table lists the configurable parameters of the CSM for Observabili
 | - | - | - |
 | `karaviTopology.image` | Location of the csm-topology Docker image | `dellemc/csm-topology:v1.0` |
 | `karaviTopology.enabled` | Enable the CSM for Observability Topology service | `true` |
-| `karaviTopology.provisionerNames` | Provisioner Names used to filter the Persistent Volumes created on the Kubernetes cluster (must be a comma-separated list) | ` csi-vxflexos.dellemc.com` |
+| `karaviTopology.provisionerNames` | Provisioner Names used to filter the Persistent Volumes created on the Kubernetes cluster (must be a comma-separated list) | ` csi-powerflex.dellemc.com` |
 | `karaviTopology.service.type` | Kubernetes service type | `ClusterIP` |
 | `karaviTopology.certificateFile` | Optional valid CA public certificate file that will be used to deploy the Topology service. Must use domain name 'karavi-topology'. | |
 | `karaviTopology.privateKeyFile` | Optional public certificate's associated private key file that will be used to deploy the Topology service. Must use domain name 'karavi-topology'. | |
@@ -71,7 +71,7 @@ The following table lists the configurable parameters of the CSM for Observabili
 | `karaviMetricsPowerflex.image` |  CSM Metrics for PowerFlex Service image | `dellemc/csm-metrics-powerflex:v1.0` |
 | `karaviMetricsPowerflex.enabled` | Enable CSM Metrics for PowerFlex service | `true` |
 | `karaviMetricsPowerflex.collectorAddr` | Metrics Collector accessible from the Kubernetes cluster | `otel-collector:55680`  |
-| `karaviMetricsPowerflex.provisionerNames` | Provisioner Names used to filter for determining PowerFlex SDC nodes( Must be a Comma-separated list) | ` csi-vxflexos.dellemc.com` |
+| `karaviMetricsPowerflex.provisionerNames` | Provisioner Names used to filter for determining PowerFlex SDC nodes( Must be a Comma-separated list) | ` csi-powerflex.dellemc.com` |
 | `karaviMetricsPowerflex.sdcPollFrequencySeconds` | The polling frequency (in seconds) to gather SDC metrics | `10` |
 | `karaviMetricsPowerflex.volumePollFrequencySeconds` | The polling frequency (in seconds) to gather volume metrics | `10` |
 | `karaviMetricsPowerflex.storageClassPoolPollFrequencySeconds` | The polling frequency (in seconds) to gather storage class/pool metrics | `10` |

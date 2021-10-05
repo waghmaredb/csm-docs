@@ -19,7 +19,7 @@ The following prerequisites must be deployed into the namespace where CSM for Ob
 
 - Prometheus for scraping the metrics from the OTEL collector.
 - Grafana for visualizing the metrics from Prometheus and Topology services using custom dashboards.
-- CSM for Observability will use secrets to get details about the storage systems used by the CSI drivers. These secrets should be copied from the namespaces where the drivers are deployed. CSI Powerflex driver uses the 'vxflexos-config' secret and CSI PowerStore uses the 'powerstore-config' secret.
+- CSM for Observability will use secrets to get details about the storage systems used by the CSI drivers. These secrets should be copied from the namespaces where the drivers are deployed. CSI Powerflex driver uses the 'powerflex-config' secret and CSI PowerStore uses the 'powerstore-config' secret.
 
 ## Deployment Architectures
 

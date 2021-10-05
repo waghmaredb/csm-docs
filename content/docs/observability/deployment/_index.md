@@ -418,14 +418,14 @@ In this case all storage system requests made by CSM for Observability will not 
 
 #### CSI Driver for Dell EMC PowerFlex
 
-1. Delete the current `vxflexos-config` Secret from the CSM namespace.
+1. Delete the current `powerflex-config` Secret from the CSM namespace.
     ```console
-    $ kubectl delete secret vxflexos-config -n [CSM_NAMESPACE]
+    $ kubectl delete secret powerflex-config -n [CSM_NAMESPACE]
     ```
 
-2. Copy the `vxflexos-config` Secret from the CSI Driver for Dell EMC PowerFlex namespace to the CSM namespace.
+2. Copy the `powerflex-config` Secret from the CSI Driver for Dell EMC PowerFlex namespace to the CSM namespace.
     ```console
-    $ kubectl get secret vxflexos-config -n [CSI_DRIVER_NAMESPACE] -o yaml | sed 's/namespace: [CSI_DRIVER_NAMESPACE]/namespace: [CSM_NAMESPACE]/' | kubectl create -f -
+    $ kubectl get secret powerflex-config -n [CSI_DRIVER_NAMESPACE] -o yaml | sed 's/namespace: [CSI_DRIVER_NAMESPACE]/namespace: [CSM_NAMESPACE]/' | kubectl create -f -
     ```
 
 ### CSI Driver for Dell EMC PowerStore

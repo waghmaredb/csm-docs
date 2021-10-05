@@ -76,17 +76,17 @@ kubectl create -f deploy/kubernetes/snapshot-controller
 
 **Steps**
 1. Run `git clone https://github.com/dell/csi-powerscale.git` to clone the git repository.
-2. Ensure that you have created the namespace where you want to install the driver. You can run `kubectl create namespace isilon` to create a new one. The use of "isilon"  as the namespace is just an example. You can choose any name for the namespace.
+2. Ensure that you have created the namespace where you want to install the driver. You can run `kubectl create namespace powerscale` to create a new one. The use of "powerscale"  as the namespace is just an example. You can choose any name for the namespace.
 3. Collect information from the PowerScale Systems like IP address, IsiPath, username, and password. Make a note of the value for these parameters as they must be entered in the *secret.yaml*.
-4. Copy *the helm/csi-isilon/values.yaml* into a new location with name say *my-isilon-settings.yaml*, to customize settings for installation.
-5. Edit *my-isilon-settings.yaml* to set the following parameters for your installation:
+4. Copy *the helm/csi-isilon/values.yaml* into a new location with name say *my-powerscale-settings.yaml*, to customize settings for installation.
+5. Edit *my-powerscale-settings.yaml* to set the following parameters for your installation:
    The following table lists the primary configurable parameters of the PowerScale driver Helm chart and their default values. More detailed information can be
    found in the  [`values.yaml`](https://github.com/dell/csi-powerscale/blob/master/helm/csi-isilon/values.yaml) file in this repository.
 
    | Parameter | Description | Required | Default |
    | --------- | ----------- | -------- |-------- |  
    | logLevel | CSI driver log level | No | "debug" |
-   | certSecretCount | Defines the number of certificate secrets, which the user is going to create for SSL authentication. (isilon-cert-0..isilon-cert-(n-1)); Minimum value should be 1.| Yes | 1 |
+   | certSecretCount | Defines the number of certificate secrets, which the user is going to create for SSL authentication. (powerscale-cert-0..powerscale-cert-(n-1)); Minimum value should be 1.| Yes | 1 |
    | [allowedNetworks](../../../features/powerscale/#support-custom-networks-for-nfs-io-traffic) | Defines the list of networks that can be used for NFS I/O traffic, CIDR format must be used. | No | [ ] |
    | maxIsilonVolumesPerNode | Defines the default value for a maximum number of volumes that the controller can publish to the node. If the value is zero CO SHALL decide how many volumes of this type can be published by the controller to the node. This limit is applicable to all the nodes in the cluster for which node label 'max-isilon-volumes-per-node' is not set. | Yes | 0 |
    | imagePullPolicy | Defines the policy to determine if the image should be pulled prior to starting the container | Yes | IfNotPresent |
@@ -117,7 +117,7 @@ kubectl create -f deploy/kubernetes/snapshot-controller
    *NOTE:* 
 
    - ControllerCount parameter value must not exceed the number of nodes in the Kubernetes cluster. Otherwise, some of the controller pods remain in a "Pending" state till new nodes are available for scheduling. The installer exits with a WARNING on the same.
-   - Whenever the *certSecretCount* parameter changes in *my-isilon-setting.yaml* user needs to reinstall the driver.
+   - Whenever the *certSecretCount* parameter changes in *my-powerscale-setting.yaml* user needs to reinstall the driver.
    
     
 6. Edit following parameters in samples/secret/secret.yaml file and update/add connection/authentication information for one or more PowerScale clusters.
@@ -147,29 +147,29 @@ kubectl create -f deploy/kubernetes/snapshot-controller
    | ISI_PRIV_NS_IFS_ACCESS | Read Only |
    | ISI_PRIV_IFS_BACKUP | Read Only |
 
-Create isilon-creds secret using the following command:
-  <br/> `kubectl create secret generic isilon-creds -n isilon --from-file=config=secret.yaml -o yaml --dry-run=client | kubectl apply -f -`
+Create powerscale-creds secret using the following command:
+  <br/> `kubectl create secret generic powerscale-creds -n powerscale --from-file=config=secret.yaml -o yaml --dry-run=client | kubectl apply -f -`
    
    *NOTE:* 
-   - If any key/value is present in all *my-isilon-settings.yaml*, *secret*, and storageClass, then the values provided in storageClass parameters take precedence.
-   - The user has to validate the yaml syntax and array-related key/values while replacing or appending the isilon-creds secret. The driver will continue to use previous values in case of an error found in the yaml file.
+   - If any key/value is present in all *my-powerscale-settings.yaml*, *secret*, and storageClass, then the values provided in storageClass parameters take precedence.
+   - The user has to validate the yaml syntax and array-related key/values while replacing or appending the powerscale-creds secret. The driver will continue to use previous values in case of an error found in the yaml file.
    - For the key isiIP/endpoint, the user can give either IP address or FQDN. Also, the user can prefix 'https' (For example, https://192.168.1.1) with the value.
-   - The *isilon-creds* secret has a *mountEndpoint* parameter which should not be updated by the user. This parameter is updated and used when the driver has been injected with [CSM-Authorization](https://github.com/dell/karavi-authorization).
+   - The *powerscale-creds* secret has a *mountEndpoint* parameter which should not be updated by the user. This parameter is updated and used when the driver has been injected with [CSM-Authorization](https://github.com/dell/karavi-authorization).
    
 7. Install OneFS CA certificates by following the instructions from the next section, if you want to validate OneFS API server's certificates. If not, create an empty secret using the following command and an empty secret must be created for the successful installation of CSI Driver for Dell EMC PowerScale.
     ```
     kubectl create -f emptysecret.yaml
     ```
-   This command will create a new secret called `isilon-certs-0` in isilon namespace.
+   This command will create a new secret called `powerscale-certs-0` in powerscale namespace.
    
-8.  Install the driver using `csi-install.sh` bash script by running `cd ../dell-csi-helm-installer && ./csi-install.sh --namespace isilon --values ../helm/my-isilon-settings.yaml` (assuming that the current working directory is 'helm' and my-isilon-settings.yaml is also present under 'helm' directory)
+8.  Install the driver using `csi-install.sh` bash script by running `cd ../dell-csi-helm-installer && ./csi-install.sh --namespace powerscale --values ../helm/my-powerscale-settings.yaml` (assuming that the current working directory is 'helm' and my-powerscale-settings.yaml is also present under 'helm' directory)
 
 ## Certificate validation for OneFS REST API calls 
 
 The CSI driver exposes an install parameter 'skipCertificateValidation' which determines if the driver
 performs client-side verification of the OneFS certificates. The 'skipCertificateValidation' parameter is set to true by default and the driver does not verify the OneFS certificates.
 
-If the 'skipCertificateValidation' is set to false, then the secret isilon-certs must contain the CA certificate for OneFS. 
+If the 'skipCertificateValidation' is set to false, then the secret powerscale-certs must contain the CA certificate for OneFS. 
 If this secret is an empty secret, then the validation of the certificate fails, and the driver fails to start.
 
 If the 'skipCertificateValidation' parameter is set to false and a previous installation attempt to create the empty secret, then this secret must be deleted and re-created using the CA certs. If the OneFS certificate is self-signed, then perform the following steps:
@@ -177,23 +177,23 @@ If the 'skipCertificateValidation' parameter is set to false and a previous inst
 ### Procedure
 
 1. To fetch the certificate, run `openssl s_client -showcerts -connect [OneFS IP] </dev/null 2>/dev/null | openssl x509 -outform PEM > ca_cert_0.pem`
-2. To create the certs secret, run `kubectl create secret generic isilon-certs-0 --from-file=cert-0=ca_cert_0.pem -n isilon`  
-3. Use the following command to replace the secret <br/> `kubectl create secret generic isilon-certs-0 -n isilon --from-file=cert-0=ca_cert_0.pem -o yaml --dry-run | kubectl replace -f -`
+2. To create the certs secret, run `kubectl create secret generic powerscale-certs-0 --from-file=cert-0=ca_cert_0.pem -n powerscale`  
+3. Use the following command to replace the secret <br/> `kubectl create secret generic powerscale-certs-0 -n powerscale --from-file=cert-0=ca_cert_0.pem -o yaml --dry-run | kubectl replace -f -`
 
 **NOTES:**
 1. The OneFS IP can be with or without a port, depends upon the configuration of OneFS API server.
-2. The commands are based on the namespace 'isilon'
+2. The commands are based on the namespace 'powerscale'
 3. It is highly recommended that ca_cert.pem file(s) having the naming convention as ca_cert_number.pem (example: ca_cert_0, ca_cert_1), where this number starts from 0 and grows as the number of OneFS arrays grows.
-4. The cert secret created out of these pem files must have the naming convention as isilon-certs-number (example: isilon-certs-0, isilon-certs-1, and so on.); The number must start from zero and must grow in incremental order. The number of the secrets created out of pem files should match certSecretCount value in myvalues.yaml or my-isilon-settings.yaml.
+4. The cert secret created out of these pem files must have the naming convention as powerscale-certs-number (example: powerscale-certs-0, powerscale-certs-1, and so on.); The number must start from zero and must grow in incremental order. The number of the secrets created out of pem files should match certSecretCount value in myvalues.yaml or my-powerscale-settings.yaml.
 
 ### Dynamic update of array details via secret.yaml
 
-CSI Driver for Dell EMC PowerScale now provides supports for Multi cluster. Now users can link the single CSI Driver to multiple OneFS Clusters by updating *secret.yaml*. Users can now update the isilon-creds secret by editing the *secret.yaml* and executing the following command
+CSI Driver for Dell EMC PowerScale now provides supports for Multi cluster. Now users can link the single CSI Driver to multiple OneFS Clusters by updating *secret.yaml*. Users can now update the powerscale-creds secret by editing the *secret.yaml* and executing the following command
 
-`kubectl create secret generic isilon-creds -n isilon --from-file=config=secret.yaml -o yaml --dry-run=client | kubectl apply -f -`
+`kubectl create secret generic powerscale-creds -n powerscale --from-file=config=secret.yaml -o yaml --dry-run=client | kubectl apply -f -`
 
 
-**Note**: Updating isilon-certs-x secrets is a manual process, unlike isilon-creds. Users have to re-install the driver in case of updating/adding the SSL certificates or changing the certSecretCount parameter.
+**Note**: Updating powerscale-certs-x secrets is a manual process, unlike powerscale-creds. Users have to re-install the driver in case of updating/adding the SSL certificates or changing the certSecretCount parameter.
 
 
 ## Storage Classes

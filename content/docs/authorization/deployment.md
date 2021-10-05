@@ -207,9 +207,9 @@ Run the following commands on the CSI Driver host
     export AuthorizationHost=""
 
     echo === Applying token token ===
-    # It is assumed that array type powermax has the namespace "powermax" and powerflex has the namepace "vxflexos"
+    # It is assumed that array type powermax has the namespace "powermax" and powerflex has the namepace "powerflex"
     kubectl apply -f /tmp/token.yaml -n powermax
-    kubectl apply -f /tmp/token.yaml -n vxflexos
+    kubectl apply -f /tmp/token.yaml -n powerflex
 
     echo === injecting sidecar in all CSI driver hosts that token has been applied to === 
     sudo curl -k https://${AuthorizationHost}/install | sh
@@ -220,7 +220,7 @@ Run the following commands on the CSI Driver host
     # 2) If you want to specify the proxy-port for powermax to be 900001, you can run
     #    sudo curl -k https://${AuthorizationHost}/install?proxy-port=powermax:900001 | sh
     # 3) You can mix behaviors
-    #    sudo curl -k https://${AuthorizationHost}/install?namespace=powermax&proxy-port=powermax:900001&namespace=vxflexos | sh
+    #    sudo curl -k https://${AuthorizationHost}/install?namespace=powermax&proxy-port=powermax:900001&namespace=powerflex | sh
    ```
 
 ## Updating CSM for Authorization Proxy Server Configuration
@@ -271,4 +271,4 @@ This edit will not update the logging level for the sidecar-proxy containers run
 kubectl -n [CSM_CSI_DRVIER_NAMESPACE] edit configmap/<release_name>-config-params
 ```
 
-Using PowerFlex as an example, `kubectl -n vxflexos edit configmap/vxflexos-config-params` can be used to update the logging level of the sidecar-proxy and the driver.
+Using PowerFlex as an example, `kubectl -n powerflex edit configmap/powerflex-config-params` can be used to update the logging level of the sidecar-proxy and the driver.

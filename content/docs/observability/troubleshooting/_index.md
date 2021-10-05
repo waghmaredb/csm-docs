@@ -68,7 +68,7 @@ Due to the error above, the client pings the topology server with a **TLS handsh
 
 ```console
 [root@:~]$ kubectl  logs  -n powerflex karavi-topology-5d4669d6dd-trzxw
-2021/04/27 09:38:28 Set DriverNames to [csi-vxflexos.dellemc.com]
+2021/04/27 09:38:28 Set DriverNames to [csi-powerflex.dellemc.com]
 2021/04/28 07:15:05 http: TLS handshake error from 10.42.0.0:58450: local error: tls: bad record MAC
 2021/04/28 07:16:14 http: TLS handshake error from 10.42.0.0:55311: local error: tls: bad record MAC
 ```
