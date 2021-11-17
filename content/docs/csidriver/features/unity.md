@@ -470,6 +470,26 @@ The user will be able to install the driver and able to create pods.
 
 This feature is introduced in CSI Driver for unity version 2.0.0. 
 
+## Single Pod Access Mode for PersistentVolumes
+Kubernetes v1.22 introduced a new accessmode `ReadWriteOncePod` for PersistentVolumes and PersistentVolumeClaims. With this alpha feature, Kubernetes allows to restrict volume access to a single pod in the cluster
+
+To use this feature 
+1. Enable the ReadWriteOncePod feature gate for kube-apiserver, kube-scheduler, and kubelet as the ReadWriteOncePod access mode is in alpha for Kubernetes v1.22 and is only supported for CSI volumes. You can enable the feature by setting command line arguments:
+`--feature-gates="...,ReadWriteOncePod=true"`
+2. Create a PVC with access mode set to ReadWriteOncePod like shown in the sample below
+```yaml
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: single-writer-only
+spec:
+  accessModes:
+  - ReadWriteOncePod # Allow only a single pod to access single-writer-only.
+  resources:
+    requests:
+      storage: 1Gi
+```
+
 ### Helm based installation
 As part of driver installation, a ConfigMap with the name `unity-config-params` is created, which contains an attribute `CSI_LOG_LEVEL` which specifies the current log level of CSI driver. 
 
