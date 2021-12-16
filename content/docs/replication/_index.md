@@ -72,7 +72,6 @@ the objects still exist in pairs.
 * Stop applications before the planned/unplanned migration.
 * Start applications after the migration.
 * Replicate `PersistentVolumeClaim` objects within/across clusters.
-* Replication with METRO mode does not need Replicator sidecar and common controller.
 
 ### CSM for Replication Module Capabilities
 
