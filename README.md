@@ -8,9 +8,9 @@ You may obtain a copy of the License at
     http://www.apache.org/licenses/LICENSE-2.0
 -->
 
-# Dell EMC Container Storage Modules (CSM)
+# Dell Container Storage Modules (CSM)
 
-Dell EMC Container Storage Modules (CSM) is an open-source suite of Kubernetes storage enablers for Dell EMC products.
+Dell Technology (Dell) Container Storage Modules (CSM) is an open-source suite of Kubernetes storage enablers for Dell products.
 
 ## Table of Contents
 
@@ -40,6 +40,6 @@ Dell EMC Container Storage Modules (CSM) is an open-source suite of Kubernetes s
 
 ## About
 
-Dell EMC Container Storage Modules (CSM) is 100% open source and community-driven. All components are available
+Dell Container Storage Modules (CSM) is 100% open source and community-driven. All components are available
 under [Apache 2 License](https://www.apache.org/licenses/LICENSE-2.0.html) on
 GitHub.
