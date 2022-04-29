@@ -7,15 +7,15 @@ weight: 2
 
 - [What are Dell Container Storage Modules (CSM)? How different is it from a CSI driver?](#what-are-dell-container-storage-modules-csm-how-different-is-it-from-a-csi-driver)
 - [Where do I start with Dell Container Storage Modules (CSM)?](#where-do-i-start-with-dell-container-storage-modules-csm)
-- [What are the prerequisites for deploying Container Storage Modules?](#what-are-the-prerequisites-for-deploying-container-storage-modules)
+- [What are the prerequisites for deploying Container Storage Modules (CSM)?](#what-are-the-prerequisites-for-deploying-container-storage-modules)
 - [How do I uninstall or disable a module?](#how-do-i-uninstall-or-disable-a-module)
-- [How do I troubleshoot Container Storage Modules?](#how-do-i-troubleshoot-container-storage-modules)
-- [Can I use the CSM functionality like Prometheus collection or Authorization quotas for my non-Kubernetes storage clients?](#can-i-use-the-csm-functionality-like-prometheus-collection-or-authorization-quotas-for-my-non-kubernetes-storage-clients)
+- [How do I troubleshoot Container Storage Modules (CSM)?](#how-do-i-troubleshoot-container-storage-modules)
+- [Can I use the Container Storage Modules (CSM) functionality like Prometheus collection or Authorization quotas for my non-Kubernetes storage clients?](#can-i-use-the-csm-functionality-like-prometheus-collection-or-authorization-quotas-for-my-non-kubernetes-storage-clients)
 - [Should I install the module in the same namespace as the driver or another?](#should-i-install-the-module-in-the-same-namespace-as-the-driver-or-another)
 - [Which Kubernetes distributions are supported?](#which-kubernetes-distributions-are-supported)
-- [How do I get a list of Container Storage Modules deployed in my cluster with their versions?](#how-do-i-get-a-list-of-container-storage-modules-deployed-in-my-cluster-with-their-versions)
-- [Do all Container Storage Modules need to be the same version, or can I mix and match?](#do-all-container-storage-modules-need-to-be-the-same-version-or-can-i-mix-and-match)
-- [Can I run Container Storage Modules in a production environment?](#can-i-run-container-storage-modules-in-a-production-environment)
+- [How do I get a list of Container Storage Modules (CSM) deployed in my cluster with their versions?](#how-do-i-get-a-list-of-container-storage-modules-deployed-in-my-cluster-with-their-versions)
+- [Do all Container Storage Modules (CSM) need to be the same version, or can I mix and match?](#do-all-container-storage-modules-need-to-be-the-same-version-or-can-i-mix-and-match)
+- [Can I run Container Storage Modules (CSM) in a production environment?](#can-i-run-container-storage-modules-in-a-production-environment)
 - [Is Dell Container Storage Modules (CSM) supported by Dell Technologies?](#is-dell-container-storage-modules-csm-supported-by-dell-technologies)
 - [Can I modify a module or contribute to the project?](#can-i-modify-a-module-or-contribute-to-the-project)
 - [What is coming next?](#what-is-coming-next)
@@ -28,7 +28,7 @@ The main goal with CSM modules is to expose storage array enterprise features di
 ### Where do I start with Dell Container Storage Modules (CSM)?
 The umbrella repository for every Dell Container Storage Module is: [https://github.com/dell/csm](https://github.com/dell/csm).
 
-### What are the prerequisites for deploying Container Storage Modules?
+### What are the prerequisites for deploying Container Storage Modules (CSM)?
 Prerequisites can be found on the respective module deployment pages:
 - [Dell Container Storage Module for Observability Deployment](../observability/deployment/#prerequisites)
 - [Dell Container Storage Module for Authorization Deployment](../authorization/deployment/#prerequisites)
@@ -43,14 +43,14 @@ Prerequisites for deploying the Dell CSI drivers can be found here:
 - [Dell Container Storage Module for Observability](../observability/uninstall/)
 - [Dell Container Storage Module for Resiliency](../resiliency/uninstallation/)
 
-### How do I troubleshoot Container Storage Modules?
+### How do I troubleshoot Container Storage Modules (CSM)?
 - [Dell CSI Drivers](../csidriver/troubleshooting/)
 - [Dell Container Storage Module for Authorization](../authorization/troubleshooting/)
 - [Dell Container Storage Module for Observability](../observability/troubleshooting/)
 - [Dell Container Storage Module for Replication](../replication/troubleshooting/)
 - [Dell Container Storage Module for Resiliency](../resiliency/troubleshooting/)
 
-### Can I use the CSM functionality like Prometheus collection or Authorization quotas for my non-Kubernetes storage clients?
+### Can I use the Container Stoarage MOdules ((CSM) functionality like Prometheus collection or Authorization quotas for my non-Kubernetes storage clients?
 No, all the modules have been designed to work inside Kubernetes with Dell CSI drivers.
 
 ### Should I install the module in the same namespace as the driver or another?
@@ -65,7 +65,7 @@ The supported Kubernetes distributions for Container Storage Modules are documen
 
 The supported distros for the Dell CSI Drivers are located [here](../csidriver/#supported-operating-systemscontainer-orchestrator-platforms).
 
-### How do I get a list of Container Storage Modules deployed in my cluster with their versions?
+### How do I get a list of Container Storage Modules (CSM) deployed in my cluster with their versions?
 The easiest way to find the module version is to check the image tag for the module. For all the namespaces you can execute the following:
 ```
 kubectl get pods -A -o jsonpath="{..image}" | tr -s '[[:space:]]' '\n' | grep 'csm\|karavi' | sort | uniq -c
@@ -75,7 +75,7 @@ Or if you know the namespace:
 kubectl get deployment,daemonset -o wide -n {{namespace}}
 ```
 
-### Do all Container Storage Modules need to be the same version, or can I mix and match?
+### Do all Container Storage Modules (CSM) need to be the same version, or can I mix and match?
 It is advised to comply with the support matrices (links below) and not deviate from it with mixed versions.
 - [Dell Container Storage Module for Authorization](../authorization/#supported-operating-systemscontainer-orchestrator-platforms)
 - [Dell Container Storage Module for Observability](../observability/#supported-operating-systemscontainer-orchestrator-platforms)
@@ -83,7 +83,7 @@ It is advised to comply with the support matrices (links below) and not deviate 
 - [Dell Container Storage Module for Resiliency](../resiliency/#supported-operating-systemscontainer-orchestrator-platforms)
 - [Dell CSI Drivers](../csidriver/#supported-operating-systemscontainer-orchestrator-platforms).
 
-### Can I run Container Storage Modules in a production environment?
+### Can I run Container Storage Modules (CSM) in a production environment?
 As of CSM 1.0, the Container Storage Modules are GA and ready for production systems.
 
 ### Is Dell Container Storage Modules (CSM) supported by Dell Technologies?
@@ -97,4 +97,4 @@ Yes!
 All Container Storage Modules are released as open-source projects under Apache-2.0 License. You are free to contribute directly following the [contribution guidelines](https://github.com/dell/csm/blob/main/docs/CONTRIBUTING.md), fork the projects, modify them, and of course share feedback or open tickets ;-)
 
 ### What is coming next?
-This is just the beginning of the journey for Dell Container Storage Modules, and there is a full roadmap with more to come, which you can check under the [GitHub Milestones](https://github.com/dell/csm/milestones) page.
+This is just the beginning of the journey for Dell Container Storage Modules. There is a full roadmap with more to come, which you can check under the [GitHub Milestones](https://github.com/dell/csm/milestones) page.
