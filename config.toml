@@ -62,7 +62,6 @@ languageName ="English"
 weight = 1
 languagedirection = "ltr"
 
-[languages]
 [languages.pmax]
 title = "Dell Technologies"
 description = "Dell Technologies (Dell) Container Storage Modules documentation pages"
