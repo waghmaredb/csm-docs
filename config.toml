@@ -13,7 +13,7 @@ staticDir = "static"
 enableGitInfo = true
 
 # Language settings
-contentDir = "content"
+contentDir = "content/en"
 defaultContentLanguage = "en"
 #defaultContentLanguageInSubdir = false
 # Useful when translating.
@@ -59,6 +59,17 @@ anchor = "smart"
 title = "Dell Technologies"
 description = "Dell Technologies (Dell) Container Storage Modules documentation pages"
 languageName ="English"
+weight = 1
+languagedirection = "ltr"
+
+[languages]
+[languages.pmax]
+title = "Dell Technologies"
+description = "Dell Technologies (Dell) Container Storage Modules documentation pages"
+languageName ="PowerMax"
+contentDir = "content/pmax"
+weight = 2
+languagedirection = "ltr"
 
 [markup]
   [markup.goldmark]
