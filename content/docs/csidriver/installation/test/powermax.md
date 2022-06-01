@@ -61,6 +61,8 @@ Use this procedure to perform a snapshot test.
 
 Use this procedure to perform a volume expansion test.
 
+>Note: This is not applicable for replicated volumes.
+
 1. Create a namespace with the name _test_
 2. Run the `cd csi-powermax/test/helm` command to go to the `csi-powermax/test/helm` directory, which contains the `volumeexpansiontest.sh`script.
 3. Run the `volumeexpansiontest.sh` script by running the command : `bash volumeexpansiontest.sh -n <test_namespace> -s <storageclass-name>`

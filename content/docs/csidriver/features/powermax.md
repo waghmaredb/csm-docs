@@ -167,6 +167,7 @@ resizer:
 
 To use this feature, the storage class that is used to create the PVC must have the attribute `allowVolumeExpansion` set to `true`.
 
+>Note: This feature is not supported for replicated volumes.
 
 This is a sample manifest for a storage class that allows for Volume Expansion.
 
