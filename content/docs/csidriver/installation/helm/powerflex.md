@@ -25,7 +25,7 @@ The following are requirements that must be met before installing the CSI Driver
 - Install Helm 3
 - Enable Zero Padding on PowerFlex
 - Mount propagation is enabled on container runtime that is being used
-- Install PowerFlex Storage Data Client 
+- Install PowerFlex Storage Data Client
 - If using Snapshot feature, satisfy all Volume Snapshot requirements
 - A user must exist on the array with a role _>= FrontEndConfigure_
 - If enabling CSM for Authorization, please refer to the [Authorization deployment steps](../../../../authorization/deployment/) first
@@ -45,13 +45,13 @@ Verify that zero padding is enabled on the PowerFlex storage pools that will be 
 
 ### Install PowerFlex Storage Data Client
 
-The CSI Driver for PowerFlex requires you to have installed the PowerFlex Storage Data Client (SDC) on all Kubernetes nodes which run the node portion of the CSI driver. 
+The CSI Driver for PowerFlex requires you to have installed the PowerFlex Storage Data Client (SDC) on all Kubernetes nodes which run the node portion of the CSI driver.
 SDC could be installed automatically by CSI driver install on Kubernetes nodes with OS platform which support automatic SDC deployment;
-currently only Red Hat CoreOS (RHCOS). 
+currently only Red Hat CoreOS (RHCOS).
 On Kubernetes nodes with OS version not supported by automatic install, you must perform the Manual SDC Deployment steps [below](#manual-sdc-deployment).
 Refer to https://hub.docker.com/r/dellemc/sdc for supported OS versions.
 
-**Optional:** For a typical install, you will pull SDC kernel modules from the Dell FTP site, which is set up by default. Some users might want to mirror this repository to a local location. The [PowerFlex KB article](https://www.dell.com/support/kbdoc/en-us/000184206/how-to-use-a-private-repository-for) has instructions on how to do this. 
+**Optional:** For a typical install, you will pull SDC kernel modules from the Dell FTP site, which is set up by default. Some users might want to mirror this repository to a local location. The [PowerFlex KB article](https://www.dell.com/support/kbdoc/en-us/000184206/how-to-use-a-private-repository-for) has instructions on how to do this.
 
 #### Manual SDC Deployment
 
@@ -87,11 +87,11 @@ The CSI external-snapshotter sidecar is split into two controllers:
 The common snapshot controller must be installed only once in the cluster irrespective of the number of CSI drivers installed in the cluster. On OpenShift clusters 4.4 and later, the common snapshot-controller is pre-installed. In the clusters where it is not present, it can be installed using `kubectl` and the manifests are available here: [v5.0.x](https://github.com/kubernetes-csi/external-snapshotter/tree/v5.0.1/deploy/kubernetes/snapshot-controller)
 
 *NOTE:*
-- The manifests available on GitHub install the snapshotter image: 
+- The manifests available on GitHub install the snapshotter image:
    - [quay.io/k8scsi/csi-snapshotter:v4.0.x](https://quay.io/repository/k8scsi/csi-snapshotter?tag=v4.0.0&tab=tags)
 - The CSI external-snapshotter sidecar is still installed along with the driver and does not involve any extra configuration.
 
-#### Installation example 
+#### Installation example
 
 You can install CRDs and default snapshot controller by running following commands:
 ```bash
@@ -117,15 +117,15 @@ kubectl -n kube-system kustomize deploy/kubernetes/snapshot-controller | kubectl
 
 4. Prepare `samples/config.yaml` for driver configuration. The following table lists driver configuration parameters for multiple storage arrays.
 
-    | Parameter | Description                                                  | Required | Default |
-    | --------- | ------------------------------------------------------------ | -------- | ------- |
-    | username  | Username for accessing PowerFlex system. If authorization is enabled, username will be ignored.                       | true     | -       |
-    | password  | Password for accessing PowerFlex system. If authorization is enabled, password will be ignored.                     | true     | -       |
-    | systemID  | System name/ID of PowerFlex system.                           | true     | -       |
-    | allSystemNames | List of previous names of powerflex array if used for PV create     | false    | -       |
+    | Parameter | Description                                                                                     | Required | Default |
+    | --------- | ----------------------------------------------------------------------------------------------- | -------- | ------- |
+    | username  | Username for accessing PowerFlex system. If authorization is enabled, username will be ignored. | true     | -       |
+    | password  | Password for accessing PowerFlex system. If authorization is enabled, password will be ignored. | true     | -       |
+    | systemID  | System name/ID of PowerFlex system.                                                             | true     | -       |
+    | allSystemNames | List of previous names of powerflex array if used for PV create                            | false    | -       |
     | endpoint  | REST API gateway HTTPS endpoint for PowerFlex system. If authorization is enabled, endpoint should be the HTTPS localhost endpoint that the authorization sidecar will listen on          | true     | -       |
-    | skipCertificateValidation  | Determines if the driver is going to validate certs while connecting to PowerFlex REST API interface. | true     | true    |
-    | isDefault | An array having isDefault=true is for backward compatibility. This parameter should occur once in the list. | false    | false   |
+    | skipCertificateValidation  | Determines if the driver is going to validate certs while connecting to PowerFlex REST API interface.                    | true     | true    |
+    | isDefault | An array having isDefault=true is for backward compatibility. This parameter should occur once in the list.                               | false    | false   |
     | mdm       | mdm defines the MDM(s) that SDC should register with on start. This should be a list of MDM IP addresses or hostnames separated by comma. | true     | -       |
 
     Example: `samples/config.yaml`
@@ -135,42 +135,43 @@ kubectl -n kube-system kustomize deploy/kubernetes/snapshot-controller | kubectl
   password: "Password123"
   systemID: "ID2"
   endpoint: "https://127.0.0.2"
-  skipCertificateValidation: true 
-  isDefault: true 
+  skipCertificateValidation: true
+  isDefault: true
   mdm: "10.0.0.3,10.0.0.4"
 ```
- *NOTE: To use multiple arrays, copy and paste section above for each array. Make sure isDefault is set to true for only one array.* 
+
+*NOTE: To use multiple arrays, copy and paste section above for each array. Make sure isDefault is set to true for only one array.*
 
 
     After editing the file, run the following command to create a secret called `vxflexos-config`:
-    
+
     `kubectl create secret generic vxflexos-config -n vxflexos --from-file=config=samples/config.yaml`
 
     Use the following command to replace or update the secret:
 
     `kubectl create secret generic vxflexos-config -n vxflexos --from-file=config=samples/config.yaml -o yaml --dry-run=client | kubectl replace -f -`
 
-    *NOTE:* 
+    *NOTE:*
 
     - The user needs to validate the YAML syntax and array-related key/values while replacing the vxflexos-creds secret.
     - If you want to create a new array or update the MDM values in the secret, you will need to reinstall the driver. If you change other details, such as login information, the secret will dynamically update -- see [dynamic-array-configuration](../../../features/powerflex#dynamic-array-configuration) for more details.
     - Old `json` format of the array configuration file is still supported in this release. If you already have your configuration in `json` format, you may continue to maintain it or you may transfer this configuration to `yaml`
-    format and replace/update the secret.  
+    format and replace/update the secret.
     - "insecure" parameter has been changed to "skipCertificateValidation" as insecure is deprecated and will be removed from use in config.yaml or secret.yaml in a future release. Users can continue to use any one of "insecure" or "skipCertificateValidation" for now. The driver would return an error if both parameters are used.
     - Please note that log configuration parameters from v1.5 will no longer work in v2.0 and higher. Please refer to the [Dynamic Logging Configuration](../../../features/powerflex#dynamic-logging-configuration) section in Features for more information.
     - If the user is using complex K8s version like "v1.21.3-mirantis-1", use below kubeVersion check in helm/csi-unity/Chart.yaml file.
            kubeVersion: ">= 1.21.0-0 < 1.24.0-0"
 
-5. Default logging options are set during Helm install. To see possible configuration options, see the [Dynamic Logging Configuration](../../../features/powerflex#dynamic-logging-configuration) section in Features.  
+1. Default logging options are set during Helm install. To see possible configuration options, see the [Dynamic Logging Configuration](../../../features/powerflex#dynamic-logging-configuration) section in Features.
 
-6. If using automated SDC deployment:
-   - Check the SDC container image is the correct version for your version of PowerFlex. 
-   
-7. Copy the default values.yaml file `cd helm && cp csi-vxflexos/values.yaml myvalues.yaml`
+2. If using automated SDC deployment:
+   - Check the SDC container image is the correct version for your version of PowerFlex.
 
-8. If you are using a custom image, check the `version` and `driverRepository` fields in `myvalues.yaml` to make sure that they are pointing to the correct image repository and driver version. These two fields are spliced together to form the image name, as shown here: `<driverRepository>/csi-vxflexos:v<version>`
+3. Copy the default values.yaml file `cd helm && cp csi-vxflexos/values.yaml myvalues.yaml`
 
-9. Look over all the other fields `myvalues.yaml` and fill in/adjust any as needed. All the fields are described here:
+4. If you are using a custom image, check the `version` and `driverRepository` fields in `myvalues.yaml` to make sure that they are pointing to the correct image repository and driver version. These two fields are spliced together to form the image name, as shown here: `<driverRepository>/csi-vxflexos:v<version>`
+
+5. Look over all the other fields `myvalues.yaml` and fill in/adjust any as needed. All the fields are described here:
 
 | Parameter                | Description                                                                                                                                                                                                                                                                                                                                                                                                    | Required | Default |
 | ------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------- | ------- |
@@ -183,7 +184,7 @@ kubectl -n kube-system kustomize deploy/kubernetes/snapshot-controller | kubectl
 | kubeletConfigDir | kubelet config directory path. Ensure that the config.yaml file is present at this path. | Yes | /var/lib/kubelet |
 | defaultFsType | Used to set the default FS type which will be used for mount volumes if FsType is not specified in the storage class. Allowed values: ext4, xfs. | Yes | ext4 |
 | fsGroupPolicy | Defines which FS Group policy mode to be used. Supported modes are`None, File, and ReadWriteOnceWithFSType.` | No | "ReadWriteOnceWithFSType" |
-| imagePullPolicy | Policy to determine if the image should be pulled prior to starting the container. Allowed values: Always, IfNotPresent, Never. | Yes | IfNotPresent | 
+| imagePullPolicy | Policy to determine if the image should be pulled prior to starting the container. Allowed values: Always, IfNotPresent, Never. | Yes | IfNotPresent |
 | enablesnapshotcgdelete | A boolean that, when enabled, will delete all snapshots in a consistency group everytime a snap in the group is deleted. | Yes | false |
 | enablelistvolumesnapshot | A boolean that, when enabled, will allow list volume operation to include snapshots (since creating a volume from a snap actually results in a new snap). It is recommend this be false unless instructed otherwise. | Yes | false |
 | allowRWOMultiPodAccess | Setting allowRWOMultiPodAccess to "true" will allow multiple pods on the same node to access the same RWO volume. This behavior conflicts with the CSI specification version 1.3. NodePublishVolume description that requires an error to be returned in this case. However, some other CSI drivers support this behavior and some customers desire this behavior. Customers use this option at their own risk. | Yes | false |
@@ -223,16 +224,16 @@ kubectl -n kube-system kustomize deploy/kubernetes/snapshot-controller | kubectl
  *NOTE:*
 - For detailed instructions on how to run the install scripts, refer to the README.md  in the dell-csi-helm-installer folder.
 - Install script will validate MDM IP(s) in `vxflexos-config` secret and creates a new field consumed by the init container and sdc-monitor container
-- This install script also runs the `verify.sh` script. You will be prompted to enter the credentials for each of the Kubernetes nodes. 
-  The `verify.sh` script needs the credentials to check if SDC has been configured on all nodes. 
+- This install script also runs the `verify.sh` script. You will be prompted to enter the credentials for each of the Kubernetes nodes.
+  The `verify.sh` script needs the credentials to check if SDC has been configured on all nodes.
 - It is mandatory to run install script after changes to MDM configuration in `vxflexos-config` secret. Refer [dynamic-array-configuration](../../../features/powerflex#dynamic-array-configuration)
 - If an extended Kubernetes version is being used (e.g. `v1.21.3-mirantis-1`) and is failing the version check in Helm even though it falls in the allowed range, then you must go into `helm/csi-vxflexos/Chart.yaml` and replace the standard `kubeVersion` check with the commented-out alternative. *Please note* that this will also allow the use of pre-release alpha and beta versions of Kubernetes, which is not supported.
-  
-- (Optional) Enable additional Mount Options - A user is able to specify additional mount options as needed for the driver. 
-   - Mount options are specified in storageclass yaml under _mkfsFormatOption_. 
+
+- (Optional) Enable additional Mount Options - A user is able to specify additional mount options as needed for the driver.
+   - Mount options are specified in storageclass yaml under _mkfsFormatOption_.
    - *WARNING*: Before utilizing mount options, you must first be fully aware of the potential impact and understand your environment's requirements for the specified option.
 
-## Certificate validation for PowerFlex Gateway REST API calls 
+## Certificate validation for PowerFlex Gateway REST API calls
 
 This topic provides details about setting up the certificate for the CSI Driver for Dell PowerFlex.
 
@@ -254,23 +255,23 @@ If the gateway certificate is self-signed or if you are using an embedded gatewa
 
 1. To fetch the certificate, run the following command.
 
-         `openssl s_client -showcerts -connect <Gateway IP:Port> </dev/null 2>/dev/null | openssl x509 -outform PEM > ca_cert_0.pem`
-	
+`openssl s_client -showcerts -connect <Gateway IP:Port> </dev/null 2>/dev/null | openssl x509 -outform PEM > ca_cert_0.pem`
+
    Example: openssl s_client -showcerts -connect 1.1.1.1:443 </dev/null 2>/dev/null | openssl x509 -outform PEM > ca_cert_0.pem
-	
+
 2. Run the following command to create the cert secret with index '0':
 
-         `kubectl create secret generic vxflexos-certs-0 --from-file=cert-0=ca_cert_0.pem -n vxflexos`
-	
+`kubectl create secret generic vxflexos-certs-0 --from-file=cert-0=ca_cert_0.pem -n vxflexos`
+
    Use the following command to replace the secret:
-	
-          `kubectl create secret generic vxflexos-certs-0 -n vxflexos --from-file=cert-0=ca_cert_0.pem -o yaml --dry-run | kubectl replace -f -` 
-	
+
+`kubectl create secret generic vxflexos-certs-0 -n vxflexos --from-file=cert-0=ca_cert_0.pem -o yaml --dry-run | kubectl replace -f -`
+
 3. Repeat step 1 and 2 to create multiple cert secrets with incremental index (example: vxflexos-certs-1, vxflexos-certs-2, etc)
 
 
-*Notes:*
-	
+*NOTES:*
+
 - "vxflexos" is the namespace for Helm-based installation but namespace can be user-defined in operator-based installation.
 - User can add multiple certificates in the same secret. The certificate file should not exceed more than 1Mb due to Kubernetes secret size limitation.
 - Whenever certSecretCount parameter changes in `myvalues.yaml` user needs to uninstall and install the driver.
@@ -286,18 +287,18 @@ For CSI driver for PowerFlex version 1.4 and later, `dell-csi-helm-installer` do
 
 Upgrading from an older version of the driver: The storage classes will be deleted if you upgrade the driver. If you wish to continue using those storage classes, you can patch them and apply the annotation “helm.sh/resource-policy”: keep before performing an upgrade.
 
->Note: If you continue to use the old storage classes, you may not be able to take advantage of any new storage class parameter supported by the driver.
+>NOTE: If you continue to use the old storage classes, you may not be able to take advantage of any new storage class parameter supported by the driver.
 
 **Steps to create storage class:**
-There are samples storage class yaml files available under `samples/storageclass`.  These can be copied and modified as needed. 
+There are samples storage class yaml files available under `samples/storageclass`.  These can be copied and modified as needed.
 
 1. Edit `storageclass.yaml` if you need ext4 filesystem and `storageclass-xfs.yaml` if you want xfs filesystem.
 2. Replace `<STORAGE_POOL>` with the storage pool you have.
 3. Replace `<SYSTEM_ID>` with the system ID you have. Note there are two appearances in the file.
-4. Edit `storageclass.kubernetes.io/is-default-class` to true if you want to set it as default, otherwise false. 
+4. Edit `storageclass.kubernetes.io/is-default-class` to true if you want to set it as default, otherwise false.
 5. Save the file and create it by using `kubectl create -f storageclass.yaml` or `kubectl create -f storageclass-xfs.yaml`
 
- *NOTE*: 
+ *NOTE*:
 - At least one storage class is required for one array.
 - If you uninstall the driver and reinstall it, you can still face errors if any update in the `values.yaml` file leads to an update of the storage class(es):
 
@@ -305,7 +306,7 @@ There are samples storage class yaml files available under `samples/storageclass
     Error: cannot patch "<sc-name>" with kind StorageClass: StorageClass.storage.k8s.io "<sc-name>" is invalid: parameters: Forbidden: updates to parameters are forbidden
 ```
 
-In case you want to make such updates, ensure to delete the existing storage classes using the `kubectl delete storageclass` command.  
+In case you want to make such updates, ensure to delete the existing storage classes using the `kubectl delete storageclass` command.
 Deleting a storage class has no impact on a running Pod with mounted PVCs. You cannot provision new PVCs until at least one storage class is newly created.
 
 ## Volume Snapshot Class
