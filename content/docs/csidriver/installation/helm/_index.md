@@ -19,3 +19,521 @@ Installing any of the CSI Driver components using Helm requires a few utilities 
 
 
 **Note:** To use these tools, a valid `KUBECONFIG` is required. Ensure that either a valid configuration is in the default location, or, that the `KUBECONFIG` environment variable points to a valid configuration before using these tools.
+
+The CSI Drivers can be deployed by using the provided Helm v3 charts and installation scripts on both Kubernetes and OpenShift platforms. For more detailed information on the installation scripts, review the scripts at 
+[PowerScale documentation](https://github.com/dell/csi-powerscale/tree/master/dell-csi-helm-installer).
+[PowerFlex documentation](https://github.com/dell/csi-powerflex/tree/master/dell-csi-helm-installer).
+The controller section of the Helm chart installs the following components in a _Deployment_ in the specified namespace:
+- CSI Driver 
+- Kubernetes External Provisioner, which provisions the volumes
+- Kubernetes External Attacher, which attaches the volumes to the containers
+- Kubernetes External Snapshotter, which provides snapshot support
+- Kubernetes External Resizer, which resizes the volume
+
+The node section of the Helm chart installs the following component in a _DaemonSet_ in the specified namespace:
+- CSI Driver 
+- Kubernetes Node Registrar, which handles the driver registration
+
+## Prerequisites
+
+The following are requirements to be met before installing the CSI Driver for Dell PowerScale:
+- Install Kubernetes or OpenShift (see [supported versions](../../../../csidriver/#features-and-capabilities))
+- Install Helm 3
+- Mount propagation is enabled on container runtime that is being used
+- If using Snapshot feature, satisfy all Volume Snapshot requirements
+- If enabling CSM for Authorization, please refer to the [Authorization deployment steps](../../../../authorization/deployment/) first
+- If enabling CSM for Replication, please refer to the [Replication deployment steps](../../../../replication/deployment/) first
+- If enabling CSM for Resiliency, please refer to the [Resiliency deployment steps](../../../../resiliency/deployment/) first
+
+> Note: For PowerFlex,
+- Install PowerFlex Storage Data Client 
+- Enable Zero Padding 
+- A user must exist on the array with a role _>= FrontEndConfigure_
+- If multipath is configured, ensure CSI-PowerFlex volumes are blacklisted by multipathd. See [troubleshooting section](../../../troubleshooting/powerflex.md) for details
+
+### Install Helm 3.0
+
+Install Helm 3.0 on the master node before you install the CSI Driver for Dell PowerScale.
+
+**Steps**
+
+  Run the `curl https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3 | bash` command to install Helm 3.0.
+
+### (Optional) Volume Snapshot Requirements
+
+Applicable only if you decided to enable snapshot feature in `values.yaml`
+
+```yaml
+controller:
+  snapshot:
+    enabled: true
+```
+
+#### Volume Snapshot CRD's
+The Kubernetes Volume Snapshot CRDs can be obtained and installed from the external-snapshotter project on Github. Manifests are available here:[v5.0.x](https://github.com/kubernetes-csi/external-snapshotter/tree/v5.0.1/client/config/crd)
+
+#### Volume Snapshot Controller
+The CSI external-snapshotter sidecar is split into two controllers:
+- A common snapshot controller
+- A CSI external-snapshotter sidecar
+
+The common snapshot controller must be installed only once in the cluster irrespective of the number of CSI drivers installed in the cluster. On OpenShift clusters 4.4 and later, the common snapshot-controller is pre-installed. In the clusters where it is not present, it can be installed using `kubectl` and the manifests are available here: [v5.0.x](https://github.com/kubernetes-csi/external-snapshotter/tree/v5.0.1/deploy/kubernetes/snapshot-controller)
+
+*NOTE:*
+- The manifests available on GitHub install the snapshotter image:
+   - [quay.io/k8scsi/csi-snapshotter:v4.0.x](https://quay.io/repository/k8scsi/csi-snapshotter?tag=v4.0.0&tab=tags)
+- The CSI external-snapshotter sidecar is still installed along with the driver and does not involve any extra configuration.
+
+## Volume Health Monitoring
+
+Volume Health Monitoring feature is optional and by default this feature is disabled for drivers when installed via helm.
+To enable this feature, add the below block to the driver manifest before installing the driver. This ensures to install external
+health monitor sidecar. To get the volume health state value under controller should be set to true as seen below. To get the
+volume stats value under node should be set to true.
+   ```yaml
+controller:
+  healthMonitor:
+    # enabled: Enable/Disable health monitor of CSI volumes
+    # Allowed values:
+    #   true: enable checking of health condition of CSI volumes
+    #   false: disable checking of health condition of CSI volumes
+    # Default value: None
+    enabled: false
+    # healthMonitorInterval: Interval of monitoring volume health condition
+    # Allowed values: Number followed by unit (s,m,h)
+    # Examples: 60s, 5m, 1h
+    # Default value: 60s
+    interval: 60s
+node:
+  healthMonitor:
+    # enabled: Enable/Disable health monitor of CSI volumes- volume usage, volume condition
+    # Allowed values:
+    #   true: enable checking of health condition of CSI volumes
+    #   false: disable checking of health condition of CSI volumes
+    # Default value: None
+    enabled: false
+   ```
+
+#### Installation example 
+
+You can install CRDs and the default snapshot controller by running the following commands:
+```bash
+git clone https://github.com/kubernetes-csi/external-snapshotter/
+cd ./external-snapshotter
+git checkout release-<your-version>
+kubectl kustomize client/config/crd | kubectl create -f -
+kubectl -n kube-system kustomize deploy/kubernetes/snapshot-controller | kubectl create -f -
+```
+
+*NOTE:*
+- It is recommended to use 5.0.x version of snapshotter/snapshot-controller.
+
+### (Optional) Replication feature Requirements
+
+Applicable only if you decided to enable the Replication feature in `values.yaml`
+
+```yaml
+replication:
+  enabled: true
+```
+#### Replication CRD's
+
+The CRDs for replication can be obtained and installed from the csm-replication project on Github. Use `csm-replication/deploy/replicationcrds.all.yaml` located in the csm-replication git repo for the installation.
+
+CRDs should be configured during replication prepare stage with repctl as described in [install-repctl](../../../../replication/deployment/install-repctl)
+
+### Enable Zero Padding on PowerFlex
+
+Verify that zero padding is enabled on the PowerFlex storage pools that will be used. Use PowerFlex GUI or the PowerFlex CLI to check this setting. For more information to configure this setting, see [Dell PowerFlex documentation](https://cpsdocs.dellemc.com/bundle/PF_CONF_CUST/page/GUID-D32BDFF7-3014-4894-8E1E-2A31A86D343A.html).
+
+### Install PowerFlex Storage Data Client
+
+The CSI Driver for PowerFlex requires you to have installed the PowerFlex Storage Data Client (SDC) on all Kubernetes nodes which run the node portion of the CSI driver. 
+SDC could be installed automatically by CSI driver install on Kubernetes nodes with OS platform which support automatic SDC deployment;
+currently only Red Hat CoreOS (RHCOS). 
+On Kubernetes nodes with OS version not supported by automatic install, you must perform the Manual SDC Deployment steps [below](#manual-sdc-deployment).
+Refer to https://hub.docker.com/r/dellemc/sdc for supported OS versions.
+
+**Optional:** For a typical install, you will pull SDC kernel modules from the Dell FTP site, which is set up by default. Some users might want to mirror this repository to a local location. The [PowerFlex KB article](https://www.dell.com/support/kbdoc/en-us/000184206/how-to-use-a-private-repository-for) has instructions on how to do this. 
+
+#### Manual SDC Deployment
+
+For detailed PowerFlex installation procedure, see the [Dell PowerFlex Deployment Guide](https://docs.delltechnologies.com/bundle/VXF_DEPLOY/page/GUID-DD20489C-42D9-42C6-9795-E4694688CC75.html). Install the PowerFlex SDC as follows:
+
+**Steps**
+
+1. Download the PowerFlex SDC from [Dell Online support](https://www.dell.com/support). The filename is EMC-ScaleIO-sdc-*.rpm, where * is the SDC name corresponding to the PowerFlex installation version.
+2. Export the shell variable _MDM_IP_ in a comma-separated list using `export MDM_IP=xx.xxx.xx.xx,xx.xxx.xx.xx`, where xxx represents the actual IP address in your environment. This list contains the IP addresses of the MDMs.
+3. Install the SDC per the _Dell PowerFlex Deployment Guide_:
+    - For Red Hat Enterprise Linux and CentOS, run `rpm -iv ./EMC-ScaleIO-sdc-*.x86_64.rpm`, where * is the SDC name corresponding to the PowerFlex installation version.
+4. To add more MDM_IP for multi-array support, run `/opt/emc/scaleio/sdc/bin/drv_cfg --add_mdm --ip 10.xx.xx.xx.xx,10.xx.xx.xx`
+
+{{< tabpane text=true right=true >}}
+  {{% tab header="**Install**:" disabled=true /%}}
+  {{% tab header="PowerScale" lang="en" %}}
+
+## Install the Driver for PowerScale
+
+**Steps**
+1. Run `git clone -b v2.3.0 https://github.com/dell/csi-powerscale.git` to clone the git repository.
+2. Ensure that you have created the namespace where you want to install the driver. You can run `kubectl create namespace isilon` to create a new one. The use of "isilon"  as the namespace is just an example. You can choose any name for the namespace.
+3. Collect information from the PowerScale Systems like IP address, IsiPath, username, and password. Make a note of the value for these parameters as they must be entered in the *secret.yaml*.
+4. Copy *the helm/csi-isilon/values.yaml* into a new location with name say *my-isilon-settings.yaml*, to customize settings for installation.
+5. Edit *my-isilon-settings.yaml* to set the following parameters for your installation:
+   The following table lists the primary configurable parameters of the PowerScale driver Helm chart and their default values. More detailed information can be
+   found in the  [`values.yaml`](https://github.com/dell/csi-powerscale/blob/master/helm/csi-isilon/values.yaml) file in this repository.
+
+   | Parameter | Description | Required | Default |
+   | --------- | ----------- | -------- |-------- |  
+   | logLevel | CSI driver log level | No | "debug" |
+   | certSecretCount | Defines the number of certificate secrets, which the user is going to create for SSL authentication. (isilon-cert-0..isilon-cert-(n-1)); Minimum value should be 1.| Yes | 1 |
+   | [allowedNetworks](../../../features/powerscale/#support-custom-networks-for-nfs-io-traffic) | Defines the list of networks that can be used for NFS I/O traffic, CIDR format must be used. | No | [ ] |
+   | maxIsilonVolumesPerNode | Defines the default value for a maximum number of volumes that the controller can publish to the node. If the value is zero CO SHALL decide how many volumes of this type can be published by the controller to the node. This limit is applicable to all the nodes in the cluster for which node label 'max-isilon-volumes-per-node' is not set. | Yes | 0 |
+   | imagePullPolicy | Defines the policy to determine if the image should be pulled prior to starting the container | Yes | IfNotPresent |
+   | verbose | Indicates what content of the OneFS REST API message should be logged in debug level logs | Yes | 1 |
+   | kubeletConfigDir | Specify kubelet config dir path | Yes | "/var/lib/kubelet" |
+   | enableCustomTopology | Indicates PowerScale FQDN/IP which will be fetched from node label and the same will be used by controller and node pod to establish a connection to Array. This requires enableCustomTopology to be enabled. | No | false |
+   | fsGroupPolicy | Defines which FS Group policy mode to be used, Supported modes `None, File and ReadWriteOnceWithFSType` | No | "ReadWriteOnceWithFSType" |
+   | podmonAPIPort | Defines the port which csi-driver will use within the cluster to support podmon | No | 8083 |
+   | maxPathLen | Defines the maximum length of path for a volume | No | 192 |
+   | ***controller*** | Configure controller pod specific parameters | | |
+   | controllerCount | Defines the number of csi-powerscale controller pods to deploy to the Kubernetes release| Yes | 2 |
+   | volumeNamePrefix | Defines a string prefix for the names of PersistentVolumes created | Yes | "k8s" |
+   | snapshot.enabled | Enable/Disable volume snapshot feature | Yes | true |
+   | snapshot.snapNamePrefix | Defines a string prefix for the names of the Snapshots created | Yes | "snapshot" |
+   | resizer.enabled | Enable/Disable volume expansion feature | Yes | true |
+   | healthMonitor.enabled | Enable/Disable health monitor of CSI volumes- volume status, volume condition | Yes | false |
+   | healthMonitor.interval | Interval of monitoring volume health condition | Yes | 60s |
+   | nodeSelector | Define node selection constraints for pods of controller deployment | No | |
+   | tolerations | Define tolerations for the controller deployment, if required | No | |
+   | leader-election-lease-duration | Duration, that non-leader candidates will wait to force acquire leadership | No | 20s |
+   | leader-election-renew-deadline   | Duration, that the acting leader will retry refreshing leadership before giving up  | No | 15s |
+   | leader-election-retry-period   | Duration, the LeaderElector clients should wait between tries of actions  | No | 5s |
+   | ***node*** | Configure node pod specific parameters | | |
+   | nodeSelector | Define node selection constraints for pods of node daemonset | No | |
+   | tolerations | Define tolerations for the node daemonset, if required | No | |
+   | dnsPolicy | Define the DNS Policy of the Node service | Yes | ClusterFirstWithHostNet |
+   | healthMonitor.enabled | Enable/Disable health monitor of CSI volumes- volume usage, volume condition | Yes | false |
+   | ***PLATFORM ATTRIBUTES*** | | | |   
+   | endpointPort | Define the HTTPs port number of the PowerScale OneFS API server. If authorization is enabled, endpointPort should be the HTTPS localhost port that the authorization sidecar will listen on. This value acts as a default value for endpointPort, if not specified for a cluster config in secret. | No | 8080 |
+   | skipCertificateValidation | Specify whether the PowerScale OneFS API server's certificate chain and hostname must be verified. This value acts as a default value for skipCertificateValidation, if not specified for a cluster config in secret. | No | true |
+   | isiAuthType | Indicates the authentication method to be used. If set to 1 then it follows as session-based authentication else basic authentication | No | 0 |
+   | isiAccessZone | Define the name of the access zone a volume can be created in. If storageclass is missing with AccessZone parameter, then value of isiAccessZone is used for the same. | No | System |
+   | enableQuota | Indicates whether the provisioner should attempt to set (later unset) quota on a newly provisioned volume. This requires SmartQuotas to be enabled.| No | true |   
+   | isiPath | Define the base path for the volumes to be created on PowerScale cluster. This value acts as a default value for isiPath, if not specified for a cluster config in secret| No | /ifs/data/csi |
+   | noProbeOnStart | Define whether the controller/node plugin should probe all the PowerScale clusters during driver initialization | No | false |
+   | autoProbe | Specify if automatically probe the PowerScale cluster if not done already during CSI calls | No | true |
+   | **authorization** | [Authorization](../../../../authorization/deployment) is an optional feature to apply credential shielding of the backend PowerScale. | - | - |
+   | enabled                  | A boolean that enables/disables authorization feature. |  No      |   false   |
+   | sidecarProxyImage | Image for csm-authorization-sidecar. | No | " " |
+   | proxyHost | Hostname of the csm-authorization server. | No | Empty |
+   | skipCertificateValidation | A boolean that enables/disables certificate validation of the csm-authorization server. | No | true |
+   | **podmon**               | Podmon is an optional feature under development and tech preview. Enable this feature only after contact support for additional information.  |  -        |  -       |
+   | enabled                  | A boolean that enable/disable podmon feature. |  No      |   false   |
+   | image | image for podmon. | No | " " |
+
+   *NOTE:* 
+
+   - ControllerCount parameter value must not exceed the number of nodes in the Kubernetes cluster. Otherwise, some of the controller pods remain in a "Pending" state till new nodes are available for scheduling. The installer exits with a WARNING on the same.
+   - Whenever the *certSecretCount* parameter changes in *my-isilon-setting.yaml* user needs to reinstall the driver.
+   - In order to enable authorization, there should be an authorization proxy server already installed.
+    
+6. Edit following parameters in samples/secret/secret.yaml file and update/add connection/authentication information for one or more PowerScale clusters.
+   
+   | Parameter | Description | Required | Default |
+   | --------- | ----------- | -------- |-------- |
+   | clusterName | Logical name of PoweScale cluster against which volume CRUD operations are performed through this secret. | Yes | - |
+   | username | username for connecting to PowerScale OneFS API server | Yes | - |
+   | password | password for connecting to PowerScale OneFS API server | Yes | - |
+   | endpoint | HTTPS endpoint of the PowerScale OneFS API server. If authorization is enabled, endpoint should be the HTTPS localhost endpoint that the authorization sidecar will listen on | Yes | - |
+   | isDefault | Indicates if this is a default cluster (would be used by storage classes without ClusterName parameter). Only one of the cluster config should be marked as default. | No | false |
+   | ***Optional parameters*** | Following parameters are Optional. If specified will override default values from values.yaml. |
+   | skipCertificateValidation | Specify whether the PowerScale OneFS API server's certificate chain and hostname must be verified. | No | default value from values.yaml |
+   | endpointPort | Specify the HTTPs port number of the PowerScale OneFS API server | No | default value from values.yaml |
+   | isiPath | The base path for the volumes to be created on PowerScale cluster. Note: IsiPath parameter in storageclass, if present will override this attribute. | No | default value from values.yaml |
+   | mountEndpoint | Endpoint of the PowerScale OneFS API server, for example, 10.0.0.1. This must be specified if [CSM-Authorization](https://github.com/dell/karavi-authorization) is enabled. | No | - |
+
+   The username specified in *secret.yaml* must be from the authentication providers of PowerScale. The user must have enough privileges to perform the actions. The suggested privileges are as follows:
+     
+
+   | Privilege | Type |
+   | --------- | ----- |
+   | ISI_PRIV_LOGIN_PAPI | Read Only |
+   | ISI_PRIV_NFS | Read Write |
+   | ISI_PRIV_QUOTA | Read Write |
+   | ISI_PRIV_SNAPSHOT | Read Write |
+   | ISI_PRIV_IFS_RESTORE | Read Only |
+   | ISI_PRIV_NS_IFS_ACCESS | Read Only |
+   | ISI_PRIV_IFS_BACKUP | Read Only |
+
+Create isilon-creds secret using the following command:
+  <br/> `kubectl create secret generic isilon-creds -n isilon --from-file=config=secret.yaml -o yaml --dry-run=client | kubectl apply -f -`
+   
+   *NOTE:* 
+   - If any key/value is present in all *my-isilon-settings.yaml*, *secret*, and storageClass, then the values provided in storageClass parameters take precedence.
+   - The user has to validate the yaml syntax and array-related key/values while replacing or appending the isilon-creds secret. The driver will continue to use previous values in case of an error found in the yaml file.
+   - For the key isiIP/endpoint, the user can give either IP address or FQDN. Also, the user can prefix 'https' (For example, https://192.168.1.1) with the value.
+   - The *isilon-creds* secret has a *mountEndpoint* parameter which should only be updated and used when [Authorization](../../../../authorization) is enabled.
+   
+7. Install OneFS CA certificates by following the instructions from the next section, if you want to validate OneFS API server's certificates. If not, create an empty secret using the following command and an empty secret must be created for the successful installation of CSI Driver for Dell PowerScale.
+    ```
+    kubectl create -f empty-secret.yaml
+    ```
+   This command will create a new secret called `isilon-certs-0` in isilon namespace.
+   
+8.  Install the driver using `csi-install.sh` bash script by running `cd ../dell-csi-helm-installer && ./csi-install.sh --namespace isilon --values ../helm/my-isilon-settings.yaml` (assuming that the current working directory is 'helm' and my-isilon-settings.yaml is also present under 'helm' directory)
+
+## Certificate validation for OneFS REST API calls 
+
+The CSI driver exposes an install parameter 'skipCertificateValidation' which determines if the driver
+performs client-side verification of the OneFS certificates. The 'skipCertificateValidation' parameter is set to true by default and the driver does not verify the OneFS certificates.
+
+If the 'skipCertificateValidation' is set to false, then the secret isilon-certs must contain the CA certificate for OneFS. 
+If this secret is an empty secret, then the validation of the certificate fails, and the driver fails to start.
+
+If the 'skipCertificateValidation' parameter is set to false and a previous installation attempt to create the empty secret, then this secret must be deleted and re-created using the CA certs. If the OneFS certificate is self-signed, then perform the following steps:
+
+### Procedure
+
+1. To fetch the certificate, run `openssl s_client -showcerts -connect [OneFS IP] </dev/null 2>/dev/null | openssl x509 -outform PEM > ca_cert_0.pem`
+2. To create the certs secret, run `kubectl create secret generic isilon-certs-0 --from-file=cert-0=ca_cert_0.pem -n isilon`  
+3. Use the following command to replace the secret <br/> `kubectl create secret generic isilon-certs-0 -n isilon --from-file=cert-0=ca_cert_0.pem -o yaml --dry-run | kubectl replace -f -`
+
+**NOTES:**
+1. The OneFS IP can be with or without a port, depends upon the configuration of OneFS API server.
+2. The commands are based on the namespace 'isilon'
+3. It is highly recommended that ca_cert.pem file(s) having the naming convention as ca_cert_number.pem (example: ca_cert_0, ca_cert_1), where this number starts from 0 and grows as the number of OneFS arrays grows.
+4. The cert secret created out of these pem files must have the naming convention as isilon-certs-number (example: isilon-certs-0, isilon-certs-1, and so on.); The number must start from zero and must grow in incremental order. The number of the secrets created out of pem files should match certSecretCount value in myvalues.yaml or my-isilon-settings.yaml.
+
+
+#### Installation example 
+
+You can install CRDs and default snapshot controller by running following commands:
+```bash
+git clone https://github.com/kubernetes-csi/external-snapshotter/
+cd ./external-snapshotter
+git checkout release-<your-version>
+kubectl kustomize client/config/crd | kubectl create -f -
+kubectl -n kube-system kustomize deploy/kubernetes/snapshot-controller | kubectl create -f -
+```
+
+*NOTE:*
+- When using Kubernetes 1.21/1.22/1.23 it is recommended to use 5.0.x version of snapshotter/snapshot-controller.
+- The CSI external-snapshotter sidecar is still installed along with the driver and does not involve any extra configuration.
+
+{{% /tab %}}
+  {{< tab header="PowerFlex" lang="en" >}}
+
+## Install the Driver for PowerFlex
+
+**Steps**
+1. Run `git clone -b v2.3.0 https://github.com/dell/csi-powerflex.git` to clone the git repository.
+
+2. Ensure that you have created a namespace where you want to install the driver. You can run `kubectl create namespace vxflexos` to create a new one.
+
+3. Collect information from the PowerFlex SDC by executing the `get_vxflexos_info.sh` script located in the `scripts` directory. This script shows the _VxFlex OS system ID_ and _MDM IP_ addresses. Make a note of the values for these parameters as they must be entered into `samples/config.yaml`.
+
+4. Prepare `samples/config.yaml` for driver configuration. The following table lists driver configuration parameters for multiple storage arrays.
+
+    | Parameter | Description                                                  | Required | Default |
+    | --------- | ------------------------------------------------------------ | -------- | ------- |
+    | username  | Username for accessing PowerFlex system. If authorization is enabled, username will be ignored.                       | true     | -       |
+    | password  | Password for accessing PowerFlex system. If authorization is enabled, password will be ignored.                     | true     | -       |
+    | systemID  | System name/ID of PowerFlex system.                           | true     | -       |
+    | allSystemNames | List of previous names of powerflex array if used for PV create     | false    | -       |
+    | endpoint  | REST API gateway HTTPS endpoint for PowerFlex system. If authorization is enabled, endpoint should be the HTTPS localhost endpoint that the authorization sidecar will listen on          | true     | -       |
+    | skipCertificateValidation  | Determines if the driver is going to validate certs while connecting to PowerFlex REST API interface. | true     | true    |
+    | isDefault | An array having isDefault=true is for backward compatibility. This parameter should occur once in the list. | false    | false   |
+    | mdm       | mdm defines the MDM(s) that SDC should register with on start. This should be a list of MDM IP addresses or hostnames separated by comma. | true     | -       |
+
+    Example: `samples/config.yaml`
+
+```yaml
+- username: "admin"
+  password: "Password123"
+  systemID: "ID2"
+  endpoint: "https://127.0.0.2"
+  skipCertificateValidation: true 
+  isDefault: true 
+  mdm: "10.0.0.3,10.0.0.4"
+```
+ *NOTE: To use multiple arrays, copy and paste section above for each array. Make sure isDefault is set to true for only one array.* 
+
+After editing the file, run the below command to create a secret called `vxflexos-config`:
+    
+    `kubectl create secret generic vxflexos-config -n vxflexos --from-file=config=samples/config.yaml`
+
+Use the below command to replace or update the secret:
+
+    `kubectl create secret generic vxflexos-config -n vxflexos --from-file=config=samples/config.yaml -o yaml --dry-run=client | kubectl replace -f -`
+
+*NOTE:* 
+
+- The user needs to validate the YAML syntax and array-related key/values while replacing the vxflexos-creds secret.
+- If you want to create a new array or update the MDM values in the secret, you will need to reinstall the driver. If you change other details, such as login information, the secret will dynamically update -- see [dynamic-array-configuration](../../../features/powerflex#dynamic-array-configuration) for more details.
+- Old `json` format of the array configuration file is still supported in this release. If you already have your configuration in `json` format, you may continue to maintain it or you may transfer this configuration to `yaml`format and replace/update the secret.  
+- "insecure" parameter has been changed to "skipCertificateValidation" as insecure is deprecated and will be removed from use in config.yaml or secret.yaml in a future release. Users can continue to use any one of "insecure" or "skipCertificateValidation" for now. The driver would return an error if both parameters are used.
+- Please note that log configuration parameters from v1.5 will no longer work in v2.0 and higher. Please refer to the [Dynamic Logging Configuration](../../../features/powerflex#dynamic-logging-configuration) section in Features for more information.
+- If the user is using complex K8s version like "v1.21.3-mirantis-1", use this kubeVersion check in helm/csi-unity/Chart.yaml file.
+           kubeVersion: ">= 1.21.0-0 < 1.24.0-0"
+	   
+	   
+5. Default logging options are set during Helm install. To see possible configuration options, see the [Dynamic Logging Configuration](../../../features/powerflex#dynamic-logging-configuration) section in Features.  
+
+6. If using automated SDC deployment:
+   - Check the SDC container image is the correct version for your version of PowerFlex. 
+   
+7. Copy the default values.yaml file `cd helm && cp csi-vxflexos/values.yaml myvalues.yaml`
+
+8. If you are using a custom image, check the `version` and `driverRepository` fields in `myvalues.yaml` to make sure that they are pointing to the correct image repository and driver version. These two fields are spliced together to form the image name, as shown here: `<driverRepository>/csi-vxflexos:v<version>`
+
+9. Look over all the other fields `myvalues.yaml` and fill in/adjust any as needed. All the fields are described here:
+
+| Parameter                | Description                                                                                                                                                                                                                                                                                                                                                                                                    | Required | Default |
+| ------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------- | ------- |
+| version | Set to verify the values file version matches driver version and used to pull the image as part of the image name. | Yes | 2.0.0 |
+| driverRepository | Set to give the repository containing the driver image (used as part of the image name). | Yes | dellemc |
+| powerflexSdc | Set to give the location of the SDC image used if automatic SDC deployment is being utilized. | No | dellemc/sdc:3.6 |
+| certSecretCount | Represents the number of certificate secrets, which the user is going to create for SSL authentication. | No | 0 |
+| logLevel | CSI driver log level. Allowed values: "error", "warn"/"warning", "info", "debug". | Yes | "debug" |
+| logFormat | CSI driver log format. Allowed values: "TEXT" or "JSON". | Yes | "TEXT" |
+| kubeletConfigDir | kubelet config directory path. Ensure that the config.yaml file is present at this path. | Yes | /var/lib/kubelet |
+| defaultFsType | Used to set the default FS type which will be used for mount volumes if FsType is not specified in the storage class. Allowed values: ext4, xfs. | Yes | ext4 |
+| fsGroupPolicy | Defines which FS Group policy mode to be used. Supported modes are`None, File, and ReadWriteOnceWithFSType.` | No | "ReadWriteOnceWithFSType" |
+| imagePullPolicy | Policy to determine if the image should be pulled prior to starting the container. Allowed values: Always, IfNotPresent, Never. | Yes | IfNotPresent | 
+| enablesnapshotcgdelete | A boolean that, when enabled, will delete all snapshots in a consistency group everytime a snap in the group is deleted. | Yes | false |
+| enablelistvolumesnapshot | A boolean that, when enabled, will allow list volume operation to include snapshots (since creating a volume from a snap actually results in a new snap). It is recommend this be false unless instructed otherwise. | Yes | false |
+| allowRWOMultiPodAccess | Setting allowRWOMultiPodAccess to "true" will allow multiple pods on the same node to access the same RWO volume. This behavior conflicts with the CSI specification version 1.3. NodePublishVolume description that requires an error to be returned in this case. However, some other CSI drivers support this behavior and some customers desire this behavior. Customers use this option at their own risk. | Yes | false |
+| **controller**           | This section allows the configuration of controller-specific parameters. To maximize the number of available nodes for controller pods, see this section. For more details on the new controller pod configurations, see the [Features section](../../../features/powerflex#controller-ha) for Powerflex specifics.              | -        | -       |
+| volumeNamePrefix | Set so that volumes created by the driver have a default prefix. If one PowerFlex/VxFlex OS system is servicing several different Kubernetes installations or users, these prefixes help you distinguish them. | Yes | "k8s" |
+| controllerCount | Set to deploy multiple controller instances. If the controller count is greater than the number of available nodes, excess pods remain in a pending state. It should be greater than 0. You can increase the number of available nodes by configuring the "controller" section in your values.yaml. For more details on the new controller pod configurations, see the [Features section](../../../features/powerflex#controller-ha) for Powerflex specifics. | Yes | 2 |
+| snapshot.enabled | A boolean that enable/disable volume snapshot feature. | No | true |
+| resizer.enabled | A boolean that enable/disable volume expansion feature. | No | true |
+| nodeSelector             | Defines what nodes would be selected for pods of controller deployment. Leave as blank to use all nodes. Uncomment this section to deploy on master nodes exclusively.                                                                                                                                                                                                                                         | Yes     | " "     |
+| tolerations              | Defines tolerations that would be applied to controller deployment. Leave as blank to install the controller on worker nodes only. If deploying on master nodes is desired, uncomment out this section.                                                                                                                                                                                                            | Yes     | " "     |
+| **healthMonitor** |  This section configures the optional deployment of the external health monitor sidecar, for controller side volume health monitoring. | - | - |
+| enabled | Enable/Disable deployment of external health monitor sidecar. | No | false |
+| volumeHealthMonitorInterval | Interval of monitoring volume health condition. Allowed values: Number followed by unit (s,m,h)| No | 60s |
+| **node** | This section allows the configuration of node-specific parameters. | - | - |
+| healthMonitor.enabled | Enable/Disable health monitor of CSI volumes- volume usage, volume condition | No | false |
+| nodeSelector | Defines what nodes would be selected for pods of node daemonset. Leave as blank to use all nodes. | Yes | " " |
+| tolerations | Defines tolerations that would be applied to node daemonset. Leave as blank to install node driver only on worker nodes. | Yes | " " |
+| **monitor**              | This section allows the configuration of the SDC monitoring pod.                                                                                                                                                                                                                                                                                                                                                  | -        | -       |
+| enabled                  | Set to enable the usage of the monitoring pod.                                                                                                                                                                                                                                                                                                                                                                | Yes     | false |
+| hostNetwork              | Set whether the monitor pod should run on the host network or not.                                                                                                                                                                                                                                                                                                                                            | Yes     | true |
+| hostPID                  | Set whether the monitor pod should run in the host namespace or not.                                                                                                                                                                                                                                                                                                                                          | Yes     | true |
+| **vgsnapshotter** | This section allows the configuration of the volume group snapshotter(vgsnapshotter) pod.  | - | - |
+| enabled | A boolean that enable/disable vg snapshotter feature. | No | false |
+| image | Image for vg snapshotter. | No | " " |
+| **podmon**               | Podmon is an optional feature under development and tech preview. Enable this feature only after contact support for additional information.  |  -        |  -       |
+| enabled                  | A boolean that enable/disable podmon feature. |  No      |   false   |
+| image | image for podmon. | No | " " |
+| **authorization** | [Authorization](../../../../authorization/deployment) is an optional feature to apply credential shielding of the backend PowerFlex. | - | - |
+| enabled                  | A boolean that enables/disables authorization feature. |  No      |   false   |
+| sidecarProxyImage | Image for csm-authorization-sidecar. | No | " " |
+| proxyHost | Hostname of the csm-authorization server. | No | Empty |
+| skipCertificateValidation | A boolean that enables/disables certificate validation of the csm-authorization server. | No | true |
+
+
+10. Install the driver using `csi-install.sh` bash script by running `cd dell-csi-helm-installer && ./csi-install.sh --namespace vxflexos --values ../helm/myvalues.yaml`. Alternatively, to do a helm install solely with Helm charts (without shell scripts), refer to `helm/README.md`.
+
+ *NOTE:*
+- For detailed instructions on how to run the install scripts, refer to the README.md  in the dell-csi-helm-installer folder.
+- Install script will validate MDM IP(s) in `vxflexos-config` secret and creates a new field consumed by the init container and sdc-monitor container
+- This install script also runs the `verify.sh` script. You will be prompted to enter the credentials for each of the Kubernetes nodes. 
+  The `verify.sh` script needs the credentials to check if SDC has been configured on all nodes. 
+- It is mandatory to run install script after changes to MDM configuration in `vxflexos-config` secret. Refer [dynamic-array-configuration](../../../features/powerflex#dynamic-array-configuration)
+- If an extended Kubernetes version is being used (e.g. `v1.21.3-mirantis-1`) and is failing the version check in Helm even though it falls in the allowed range, then you must go into `helm/csi-vxflexos/Chart.yaml` and replace the standard `kubeVersion` check with the commented-out alternative. *Please note* that this will also allow the use of pre-release alpha and beta versions of Kubernetes, which is not supported.
+  
+- (Optional) Enable additional Mount Options - A user is able to specify additional mount options as needed for the driver. 
+   - Mount options are specified in storageclass yaml under _mkfsFormatOption_. 
+   - *WARNING*: Before utilizing mount options, you must first be fully aware of the potential impact and understand your environment's requirements for the specified option.
+
+## Certificate validation for PowerFlex Gateway REST API calls 
+
+This topic provides details about setting up the certificate for the CSI Driver for Dell PowerFlex.
+
+*Before you begin*
+
+As part of the CSI driver installation, the CSI driver requires a secret with the name vxflexos-certs-0 to vxflexos-certs-n based on the ".Values.certSecretCount" parameter present in the namespace vxflexos.
+
+This secret contains the X509 certificates of the CA which signed PowerFlex gateway SSL certificate in PEM format.
+
+The CSI driver exposes an install parameter in config.yaml, `skipCertificateValidation`, which determines if the driver performs client-side verification of the gateway certificates.
+
+`skipCertificateValidation` parameter is set to true by default, and the driver does not verify the gateway certificates.
+
+If `skipCertificateValidation` is set to false, then the secret vxflexos-certs-n must contain the CA certificate for the array gateway.
+
+If this secret is an empty secret, then the validation of the certificate fails, and the driver fails to start.
+
+If the gateway certificate is self-signed or if you are using an embedded gateway, then perform the following steps.
+
+1. To fetch the certificate, run the following command.
+
+         `openssl s_client -showcerts -connect <Gateway IP:Port> </dev/null 2>/dev/null | openssl x509 -outform PEM > ca_cert_0.pem`
+	
+   Example: openssl s_client -showcerts -connect 1.1.1.1:443 </dev/null 2>/dev/null | openssl x509 -outform PEM > ca_cert_0.pem
+	
+2. Run the following command to create the cert secret with index '0':
+
+         `kubectl create secret generic vxflexos-certs-0 --from-file=cert-0=ca_cert_0.pem -n vxflexos`
+	
+   Use the following command to replace the secret:
+	
+          `kubectl create secret generic vxflexos-certs-0 -n vxflexos --from-file=cert-0=ca_cert_0.pem -o yaml --dry-run | kubectl replace -f -` 
+	
+3. Repeat step 1 and 2 to create multiple cert secrets with incremental index (example: vxflexos-certs-1, vxflexos-certs-2, etc)
+
+
+*Notes:*
+	
+- "vxflexos" is the namespace for Helm-based installation but namespace can be user-defined in operator-based installation.
+- User can add multiple certificates in the same secret. The certificate file should not exceed more than 1Mb due to Kubernetes secret size limitation.
+- Whenever certSecretCount parameter changes in `myvalues.yaml` user needs to uninstall and install the driver.
+- Updating vxflexos-certs-n secrets is a manual process, unlike vxflexos-config. Users have to re-install the driver in case of updating/adding the SSL certificates or changing the certSecretCount parameter.
+
+  {{% /tab %}}
+{{% /tabpane %}}
+
+### Dynamic update of array details via secret.yaml
+
+CSI Driver for Dell PowerScale now provides supports for Multi cluster. Now users can link the single CSI Driver to multiple OneFS Clusters by updating *secret.yaml*. Users can now update the isilon-creds secret by editing the *secret.yaml* and executing the following command
+
+`kubectl create secret generic isilon-creds -n isilon --from-file=config=secret.yaml -o yaml --dry-run=client | kubectl apply -f -`
+
+
+**Note**: Updating isilon-certs-x secrets is a manual process, unlike isilon-creds. Users have to re-install the driver in case of updating/adding the SSL certificates or changing the certSecretCount parameter.
+
+### What happens to my existing storage classes while upgrading?
+
+The storage classes created as part of the installation have an annotation - "helm.sh/resource-policy": keep set. This ensures that even after an uninstall or upgrade, the storage classes are not deleted. You can continue using these storage classes if you wish so.
+
+*NOTE*:
+- At least one storage class is required for one array.
+- If you uninstall the driver and reinstall it, you can still face errors if any update in the `values.yaml` file leads to an update of the storage class(es):
+
+```
+    Error: cannot patch "<sc-name>" with kind StorageClass: StorageClass.storage.k8s.io "<sc-name>" is invalid: parameters: Forbidden: updates to parameters are forbidden
+```
+
+In case you want to make such updates, ensure to delete the existing storage classes using the `kubectl delete storageclass` command.  
+Deleting a storage class has no impact on a running Pod with mounted PVCs. You cannot provision new PVCs until at least one storage class is newly created.
+
+>Note: If you continue to use the old storage classes, you may not be able to take advantage of any new storage class parameter supported by the driver.
+
+**Steps to create storage class:**
+There are samples storage class yaml files available under `samples/storageclass`.  These can be copied and modified as needed. 
+
+1. Edit `storageclass.yaml` if you need ext4 filesystem and `storageclass-xfs.yaml` if you want xfs filesystem.
+2. Replace `<STORAGE_POOL>` with the storage pool you have.
+3. Replace `<SYSTEM_ID>` with the system ID you have. Note there are two appearances in the file.
+4. Edit `storageclass.kubernetes.io/is-default-class` to true if you want to set it as default, otherwise false. 
+5. Save the file and create it by using `kubectl create -f storageclass.yaml` or `kubectl create -f storageclass-xfs.yaml`
+
+### What happens to my existing Volume Snapshot Classes while upgrading?
+
+The existing volume snapshot class will be retained.
+
+
+
