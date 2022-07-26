@@ -322,7 +322,7 @@ kubectl -n kube-system kustomize deploy/kubernetes/snapshot-controller | kubectl
 - The CSI external-snapshotter sidecar is still installed along with the driver and does not involve any extra configuration.
 
 {{% /tab %}}
-  {{< tab header="PowerFlex" lang="en" >}}
+  {{< tab header="PowerFlex" lang="en" %}}
 
 ## Install the Driver for PowerFlex
 
