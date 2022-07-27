@@ -171,7 +171,13 @@ For detailed PowerFlex installation procedure, see the [Dell PowerFlex Deploymen
 {{< tabpane persistLang=false >}}
   {{< tab header="**Install**" disabled=true />}}
   {{< tab header="PowerScale" lang="en" >}}
-
+  [markup]
+  [markup.goldmark]
+    [markup.goldmark.renderer]
+      unsafe = true
+  [markup.highlight]
+      # See a complete list of available styles at https://xyproto.github.io/splash/docs/all.html
+      style = "tango"
   ## Install the Driver for PowerScale
 
   **Steps**
