@@ -168,9 +168,9 @@ For detailed PowerFlex installation procedure, see the [Dell PowerFlex Deploymen
     - For Red Hat Enterprise Linux and CentOS, run `rpm -iv ./EMC-ScaleIO-sdc-*.x86_64.rpm`, where * is the SDC name corresponding to the PowerFlex installation version.
 4. To add more MDM_IP for multi-array support, run `/opt/emc/scaleio/sdc/bin/drv_cfg --add_mdm --ip 10.xx.xx.xx.xx,10.xx.xx.xx`
 
-{{<_tabpane_text=true_right=true_>}}
-  {{%_tab_header="**Install**:"_disabled=true_/%}}
-  {{<_tab_header="PowerFlex"_lang="de"_>}}
+{{< tabpane persistLang=false >}}
+  {{< tab header="**Install**" disabled=true />}}
+  {{< tab header="PowerScale" lang="en" >}}
 
   ## Install the Driver for PowerScale
 
@@ -321,8 +321,8 @@ For detailed PowerFlex installation procedure, see the [Dell PowerFlex Deploymen
   - When using Kubernetes 1.21/1.22/1.23 it is recommended to use 5.0.x version of snapshotter/snapshot-controller.
   - The CSI external-snapshotter sidecar is still installed along with the driver and does not involve any extra configuration.
 
-  {{%_/tab_%}}
-  {{%_tab_header="English"_lang="en"_%}}
+  {{< /tab >}}
+  {{< tab header="PowerFlex" lang="en" >}}
 
   ## Install the Driver for PowerFlex
 
@@ -493,8 +493,8 @@ For detailed PowerFlex installation procedure, see the [Dell PowerFlex Deploymen
   - Whenever certSecretCount parameter changes in `myvalues.yaml` user needs to uninstall and install the driver.
   - Updating vxflexos-certs-n secrets is a manual process, unlike vxflexos-config. Users have to re-install the driver in case of updating/adding the SSL certificates or changing the certSecretCount parameter.
 
-  {{<_/tab_>}}
-{{%_/tabpane_%}}
+  {{< /tab >}}
+{{< /tabpane >}}
 
 ### Dynamic update of array details via secret.yaml
 
