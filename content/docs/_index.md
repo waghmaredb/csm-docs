@@ -11,7 +11,7 @@ no_list: true
 
 The Dell Technologies (Dell) Container Storage Modules (CSM) enables simple and consistent integration and automation experiences, extending enterprise storage capabilities to Kubernetes for cloud-native stateful applications. It reduces management complexity so developers can independently consume enterprise storage with ease and automate daily operations such as provisioning, snapshotting, replication, observability, authorization, application mobility, encryption, and resiliency.
 
-<img src="csm_hexagon.png" alt="CSM Hex Diagram" width="500"/>
+<img src="csm_hexagon.jpg" alt="CSM Hex Diagram" width="500"/>
 
 CSM is made up of multiple components including modules (enterprise capabilities), CSI drivers (storage enablement), and other related applications (deployment, feature controllers, etc).
 
