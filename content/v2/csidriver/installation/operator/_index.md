@@ -298,12 +298,12 @@ The below notes explain some of the general items to take care of.
         - args:
           - --volume-name-prefix=csiunity
           - --default-fstype=ext4
-          image: k8s.gcr.io/sig-storage/csi-provisioner:v3.2.0
+          image: registry.k8s.io/sig-storage/csi-provisioner:v3.2.0
           imagePullPolicy: IfNotPresent
           name: provisioner
         - args:
           - --snapshot-name-prefix=csiunitysnap
-          image: k8s.gcr.io/sig-storage/csi-snapshotter:v6.0.1
+          image: registry.k8s.io/sig-storage/csi-snapshotter:v6.0.1
           imagePullPolicy: IfNotPresent
           name: snapshotter
         - args:
@@ -311,13 +311,13 @@ The below notes explain some of the general items to take care of.
           image: gcr.io/k8s-staging-sig-storage/csi-external-health-monitor-controller:v0.6.0
           imagePullPolicy: IfNotPresent
           name: external-health-monitor
-        - image: k8s.gcr.io/sig-storage/csi-attacher:v3.5.0
+        - image: registry.k8s.io/sig-storage/csi-attacher:v3.5.0
           imagePullPolicy: IfNotPresent
           name: attacher
-        - image: k8s.gcr.io/sig-storage/csi-node-driver-registrar:v2.5.1
+        - image: registry.k8s.io/sig-storage/csi-node-driver-registrar:v2.5.1
           imagePullPolicy: IfNotPresent
           name: registrar
-        - image: k8s.gcr.io/sig-storage/csi-resizer:v1.5.0
+        - image: registry.k8s.io/sig-storage/csi-resizer:v1.5.0
           imagePullPolicy: IfNotPresent
           name: resizer
     ```

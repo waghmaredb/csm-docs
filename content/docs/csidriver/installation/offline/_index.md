@@ -178,25 +178,25 @@ Preparing a offline bundle for installation
 
    5b1fa8e3e100: Loading layer [==================================================>]  3.697MB/3.697MB
    e20ed4c73206: Loading layer [==================================================>]  17.22MB/17.22MB
-   Loaded image: k8s.gcr.io/sig-storage/csi-node-driver-registrar:v2.6.0
+   Loaded image: registry.k8s.io/sig-storage/csi-node-driver-registrar:v2.6.0
    d72a74c56330: Loading layer [==================================================>]  3.031MB/3.031MB
    f2d2ab12e2a7: Loading layer [==================================================>]  48.08MB/48.08MB
-   Loaded image: k8s.gcr.io/sig-storage/csi-snapshotter-v6.1.0
+   Loaded image: registry.k8s.io/sig-storage/csi-snapshotter-v6.1.0
    417cb9b79ade: Loading layer [==================================================>]  3.062MB/3.062MB
    61fefb35ccee: Loading layer [==================================================>]  16.88MB/16.88MB
-   Loaded image: k8s.gcr.io/sig-storage/csi-node-driver-registrar:v2.5.1
+   Loaded image: registry.k8s.io/sig-storage/csi-node-driver-registrar:v2.5.1
    7a5b9c0b4b14: Loading layer [==================================================>]  3.031MB/3.031MB
    1555ad6e2d44: Loading layer [==================================================>]  49.86MB/49.86MB
-   Loaded image: k8s.gcr.io/sig-storage/csi-attacher-v4.0.0
+   Loaded image: registry.k8s.io/sig-storage/csi-attacher-v4.0.0
    2de1422d5d2d: Loading layer [==================================================>]  54.56MB/54.56MB
-   Loaded image: k8s.gcr.io/sig-storage/csi-resizer-v1.6.0
+   Loaded image: registry.k8s.io/sig-storage/csi-resizer-v1.6.0
    25a1c1010608: Loading layer [==================================================>]  54.54MB/54.54MB
-   Loaded image: k8s.gcr.io/sig-storage/csi-snapshotter-v6.0.1
+   Loaded image: registry.k8s.io/sig-storage/csi-snapshotter-v6.0.1
    07363fa84210: Loading layer [==================================================>]  3.062MB/3.062MB
    5227e51ea570: Loading layer [==================================================>]  54.92MB/54.92MB
-   Loaded image: k8s.gcr.io/sig-storage/csi-attacher-v3.5.0
+   Loaded image: registry.k8s.io/sig-storage/csi-attacher-v3.5.0
    cfb5cbeabdb2: Loading layer [==================================================>]  55.38MB/55.38MB
-   Loaded image: k8s.gcr.io/sig-storage/csi-resizer-v1.5.0
+   Loaded image: registry.k8s.io/sig-storage/csi-resizer-v1.5.0
    ...
    ...
 
