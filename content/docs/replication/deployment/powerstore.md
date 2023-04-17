@@ -137,13 +137,13 @@ StorageClass to be created in `cluster-1`:
 apiVersion: storage.k8s.io/v1
 kind: StorageClass
 metadata:
-  name: "powerstore-replication"
+  name: "powerstore-block-replication"
 provisioner: "csi-powerstore.dellemc.com"
 reclaimPolicy: Retain
 volumeBindingMode: Immediate
 parameters:
   replication.storage.dell.com/isReplicationEnabled: "true"
-  replication.storage.dell.com/remoteStorageClassName: "powerstore-replication"
+  replication.storage.dell.com/remoteStorageClassName: "powerstore-block-replication"
   replication.storage.dell.com/remoteClusterID: "cluster-2"
   replication.storage.dell.com/remoteSystem: "RT-0002"
   replication.storage.dell.com/rpo: Five_Minutes
@@ -157,13 +157,13 @@ StorageClass to be created in `cluster-2`:
 apiVersion: storage.k8s.io/v1
 kind: StorageClass
 metadata:
-  name: "powerstore-replication"
+  name: "powerstore-block-replication"
 provisioner: "csi-powerstore.dellemc.com"
 reclaimPolicy: Retain
 volumeBindingMode: Immediate
 parameters:
   replication.storage.dell.com/isReplicationEnabled: "true"
-  replication.storage.dell.com/remoteStorageClassName: "powerstore-replication"
+  replication.storage.dell.com/remoteStorageClassName: "powerstore-block-replication"
   replication.storage.dell.com/remoteClusterID: "cluster-1"
   replication.storage.dell.com/remoteSystem: "RT-0001"
   replication.storage.dell.com/rpo: Five_Minutes
@@ -182,16 +182,16 @@ It will look like this:
 apiVersion: storage.k8s.io/v1
 kind: StorageClass
 metadata:
-  name: "powerstore-replication"
+  name: "powerstore-file-replication"
 provisioner: "csi-powerstore.dellemc.com"
 reclaimPolicy: Retain
 volumeBindingMode: Immediate
 parameters:
-  csi.storage.k8s.io/fstype: "ext4"
+  csi.storage.k8s.io/fstype: "nfs"
   replication.storage.dell.com/nasName: "nas-server"
   replication.storage.dell.com/allowRoot: "false"
   replication.storage.dell.com/isReplicationEnabled: "true"
-  replication.storage.dell.com/remoteStorageClassName: "powerstore-replication"
+  replication.storage.dell.com/remoteStorageClassName: "powerstore-file-replication"
   replication.storage.dell.com/remoteClusterID: "tgt-cluster-id"
   replication.storage.dell.com/remoteSystem: "RT-0000"
   replication.storage.dell.com/rpo: Five_Minutes
