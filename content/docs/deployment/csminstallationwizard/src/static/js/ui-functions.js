@@ -176,6 +176,10 @@ const resetArrayPollRate = csmMapValue => {
 	document.getElementById("poll-rate").value = String(csmMapValue.get("pollRate"));
 }
 
+const resetArrayConnectionLossThreshold = csmMapValue => {
+	document.getElementById("array-threshold").value = String(csmMapValue.get("arrayThreshold"));
+}
+
 const resetLabelValue = (driverValue, CONSTANTS_PARAM) => {
 	if (driverValue === CONSTANTS_PARAM.POWERSTORE) {
 		document.getElementById("label-value").value = CONSTANTS_PARAM.POWERSTORE_LABEL_VALUE;
@@ -259,8 +263,6 @@ function displayModules(installationType, driverName, CONSTANTS_PARAM) {
 			if (installationType === 'operator'){
 				$(".resiliency").hide();
 				$(".resiliency-operator").show();
-				$(".observability").hide();
-				$(".replication-mod").hide();
 				$(".image-repository").hide();
 				$(".cert-manager").hide();
 				$(".resizer").hide();
@@ -293,7 +295,8 @@ function displayModules(installationType, driverName, CONSTANTS_PARAM) {
 			$(".vgsnapshot").hide();
 			$(".authorization").hide();
 			$(".fsGroupPolicy").show();	
-			$(".cert-manager").hide();			
+			$(".cert-manager").hide();
+			$(".storage-capacity").show();	
 			document.getElementById("driver-namespace").value = CONSTANTS_PARAM.UNITY_NAMESPACE;
 			break;
 	}
@@ -385,6 +388,7 @@ if (typeof exports !== 'undefined') {
 		resetArrayPollRate,
 		resetLabelValue,
 		resetDriverPodLabel,
+		resetArrayConnectionLossThreshold,
 		resetTaint,
 		downloadFile,
 		displayModules,

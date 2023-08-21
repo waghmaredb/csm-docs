@@ -165,17 +165,11 @@ spec:
       # Leave as blank to consider all nodes
       # Allowed values: map of key-value pairs
       # Default value: None
-      nodeSelector:$NODE_POD_NODE_SELECTOR
-      # Uncomment if nodes you wish to use have the node-role.kubernetes.io/control-plane taint
-      #  node-role.kubernetes.io/control-plane: ""
+      nodeSelector:$CONTROLLER_POD_NODE_SELECTOR
 
       # tolerations: Define tolerations for the controller deployment, if required.
       # Default value: None
-      tolerations:$NODE_TOLERATIONS
-      # Uncomment if nodes you wish to use have the node-role.kubernetes.io/control-plane taint
-      # - key: "node-role.kubernetes.io/control-plane"
-      #   operator: "Exists"
-      #   effect: "NoSchedule"
+      tolerations:$CONTROLLER_TOLERATIONS
 
     node:
       envs:
@@ -219,8 +213,6 @@ spec:
       # Allowed values: map of key-value pairs
       # Default value: None
       nodeSelector:$NODE_POD_NODE_SELECTOR
-      # Uncomment if nodes you wish to use have the node-role.kubernetes.io/control-plane taint
-      #  node-role.kubernetes.io/control-plane: ""
 
       # tolerations: Define tolerations for the node daemonset, if required.
       # Default value: None
@@ -234,10 +226,6 @@ spec:
       # - key: "node.kubernetes.io/network-unavailable"
       #   operator: "Exists"
       #   effect: "NoExecute"
-      # Uncomment if nodes you wish to use have the node-role.kubernetes.io/control-plane taint
-      # - key: "node-role.kubernetes.io/control-plane"
-      #   operator: "Exists"
-      #   effect: "NoSchedule"
 
     sideCars:
       - name: provisioner
@@ -256,7 +244,7 @@ spec:
     # Authorization: enable csm-authorization for RBAC
     - name: authorization
       # enable: Enable/Disable csm-authorization
-      enabled: false
+      enabled: $AUTHORIZATION_ENABLED
       configVersion: v1.7.0
       components:
       - name: karavi-authorization-proxy
@@ -264,11 +252,11 @@ spec:
         envs:
           # proxyHost: hostname of the csm-authorization server
           - name: "PROXY_HOST"
-            value: "csm-authorization.com"
+            value: "$AUTHORIZATION_PROXY_HOST"
 
           # skipCertificateValidation: Enable/Disable certificate validation of the csm-authorization server       
           - name: "SKIP_CERTIFICATE_VALIDATION"
-            value: "true"
+            value: "$AUTHORIZATION_SKIP_CERTIFICATE_VALIDATION"
 
     # replication: allows to configure replication
     # Replication CRDs must be installed before installing driver
@@ -278,7 +266,7 @@ spec:
       #   true: enable replication feature(install dell-csi-replicator sidecar)
       #   false: disable replication feature(do not install dell-csi-replicator sidecar)
       # Default value: false
-      enabled: false
+      enabled: $REPLICATION_ENABLED
       configVersion: v1.5.0
       components:
       - name: dell-csi-replicator
@@ -294,7 +282,7 @@ spec:
             value: "replication.storage.dell.com"
           # replicationContextPrefix: prefix to use for naming of resources created by replication feature
           # Allowed values: string
-          # Default value: powerstore
+          # Default value: powerscale
           - name: "X_CSI_REPLICATION_CONTEXT_PREFIX"
             value: "powerscale"
 
@@ -337,12 +325,12 @@ spec:
     # observability: allows to configure observability
     - name: observability
       # enabled: Enable/Disable observability
-      enabled: false
+      enabled: $OBSERVABILITY_ENABLED
       configVersion: v1.5.0
       components:
         - name: topology
           # enabled: Enable/Disable topology
-          enabled: false
+          enabled: $OBSERVABILITY_ENABLED
           # image: Defines karavi-topology image. This shouldn't be changed
           # Allowed values: string
           image: dellemc/csm-topology:v1.5.0
@@ -355,7 +343,7 @@ spec:
 
         - name: otel-collector
           # enabled: Enable/Disable OpenTelemetry Collector
-          enabled: false
+          enabled: $POWERSCALE_OBSERVABILITY_METRICS_ENABLED
           # image: Defines otel-collector image. This shouldn't be changed
           # Allowed values: string
           image: otel/opentelemetry-collector:0.42.0
@@ -366,9 +354,17 @@ spec:
             - name: "NGINX_PROXY_IMAGE"
               value: "nginxinc/nginx-unprivileged:1.20"
 
+        - name: cert-manager
+          # enabled: Enable/Disable cert-manager
+          # Allowed values:
+          #   true: enable deployment of cert-manager
+          #   false: disable deployment of cert-manager only if it's already deployed
+          # Default value: false
+          enabled: $OBSERVABILITY_ENABLED
+
         - name: metrics-powerscale
           # enabled: Enable/Disable PowerScale metrics
-          enabled: false
+          enabled: $POWERSCALE_OBSERVABILITY_METRICS_ENABLED
           # image: Defines PowerScale metrics image. This shouldn't be changed
           # Allowed values: string
           image: dellemc/csm-metrics-powerscale:v1.2.0
@@ -451,7 +447,7 @@ spec:
             - "--skipArrayConnectionValidation=$SKIP_ARRAY_CONNECTION_VALIDATION"
             - "--driverPodLabelValue=$DRIVER_POD_LABEL_VALUE"
             - "--ignoreVolumelessPods=$IGNORE_VOLUMELESS_PODS"
-            - "--arrayConnectivityConnectionLossThreshold=3"
+            - "--arrayConnectivityConnectionLossThreshold=$ARRAY_THRESHOLD"
             # Below 4 args should not be modified.
             - "--csisock=unix:/var/run/csi/csi.sock"
             - "--mode=controller"
@@ -469,10 +465,10 @@ spec:
           args:
             - "--labelvalue=$LABEL_VALUE"
             - "--arrayConnectivityPollRate=$POLL_RATE"
-            - "--leaderelection=$SKIP_ARRAY_CONNECTION_VALIDATION"
+            - "--leaderelection=$LEADER_ELECTION"
             - "--driverPodLabelValue=$DRIVER_POD_LABEL_VALUE"
             - "--ignoreVolumelessPods=$IGNORE_VOLUMELESS_PODS"
-            - "--arrayConnectivityConnectionLossThreshold=3"
+            - "--arrayConnectivityConnectionLossThreshold=$ARRAY_THRESHOLD"
             # Below 4 args should not be modified.
             - "--csisock=unix:/var/lib/kubelet/plugins/csi-isilon/csi_sock"
             - "--mode=node"

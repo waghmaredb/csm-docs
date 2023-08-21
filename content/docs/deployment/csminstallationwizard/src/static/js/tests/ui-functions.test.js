@@ -31,6 +31,7 @@ const {
 	resetSnapNamePrefix,
 	resetDriverPodLabel,
 	resetArrayPollRate,
+	resetArrayConnectionLossThreshold,
 	resetLabelValue,
 	resetNodeSelectorLabel,
 	resetDriverNamespace,
@@ -391,6 +392,22 @@ describe("GIVEN resetArrayPollRate function", () => {
 	});
 });
 
+describe("GIVEN resetArrayConnectionLossThreshold function", () => {
+	const testCSMMap = new Map([
+		["arrayThreshold", "3"]
+	]);
+
+	test("SHOULD invoke resetArrayConnectionLossThreshold function", () => {
+		document.body.innerHTML = `
+            <input type="number" id="array-threshold">
+        `;
+
+		resetArrayConnectionLossThreshold(testCSMMap);
+
+		expect(document.getElementById("array-threshold").value).toEqual("3");
+	});
+});
+
 describe("GIVEN resetLabelValue function", () => {
 	test("SHOULD invoke resetLabelValue function", () => {
 		document.body.innerHTML = `
@@ -544,8 +561,6 @@ describe("GIVEN displayModules function", () => {
 
 		expect($(".vgsnapshot").css("display")).toEqual("none");
 		expect($(".authorization").css("display")).toEqual("block");
-		expect($(".observability").css("display")).toEqual("none");
-		expect($(".replication-mod").css("display")).toEqual("none");
 		expect($(".image-repository").css("display")).toEqual("none");
 		expect($(".cert-manager").css("display")).toEqual("none");
 		expect($(".resizer").css("display")).toEqual("none");
