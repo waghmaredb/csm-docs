@@ -14,6 +14,7 @@ description: Release notes for PowerFlex CSI driver
 - [#926 - [FEATURE]: Set up golangci-lint for all CSM repositories](https://github.com/dell/csm/issues/926)
 - [#947 - [FEATURE]: K8S 1.28 support in CSM 1.8](https://github.com/dell/csm/issues/947)
 - [#878 - [FEATURE] CSI 1.5 spec support : Implement Volume Limits](https://github.com/dell/csm/issues/878)
+- [#885 - [FEATURE] Updated sdc version to 3.6.1](https://github.com/dell/csm/issues/885)
 
 ### Fixed Issues
 
