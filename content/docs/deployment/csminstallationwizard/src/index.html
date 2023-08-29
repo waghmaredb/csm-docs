@@ -363,14 +363,14 @@
 
                   <div class="row mb-4 col-sm-11 renameSDC-feature">
                     <div class="col-sm-12">
-                      <input class="form-check-input" type="checkbox" id="renameSDC" value="" onchange="onSnapshotChange(snapshotNote, driver, CONSTANTS)" checked>
-                      <label for="snapshot" class="form-check-label ms-2 text-dark" data-bs-toggle="tooltip" data-bs-placement="right" title="Enable/Disable Rename SDC feature." style="width: 180px;">Snapshot</label>
+                      <input class="form-check-input" type="checkbox" id="renameSDC" value="">
+                      <label for="renameSDC" class="form-check-label ms-2 text-dark" data-bs-toggle="tooltip" data-bs-placement="right" title="Enable/Disable Rename SDC feature.">Rename SDC</label>
                     </div>
                     <div class="was-validated row mt-3 child-level-one" id="SDC-prefix">
                       <label for="snapshot-prefix" class="col-sm-3 col-form-label" data-bs-toggle="tooltip" data-bs-placement="right" title="Prefix to apply to the names of a SDC">SDC Prefix</label>
                       <div class="col-sm-9"></div>
                       <div class="col-sm-2">
-                        <input class="form-control input-lg" type="text" id="SDC-prefix" placeholder="csi-snap" oninput="validateInput(validateForm, CONSTANTS)" required>
+                        <input class="form-control input-lg" type="text" id="SDC-prefix" placeholder="sdc-test" required>
                       </div>
                       <div class="col-sm-4">
                         <div class="row mt-1">
