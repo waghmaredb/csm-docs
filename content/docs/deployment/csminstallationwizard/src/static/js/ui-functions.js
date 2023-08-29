@@ -182,10 +182,10 @@ function onNodeSelectorChange(nodeSelectorNoteValue, csmMapValue) {
 function onRenameSDCChange(driverName, CONSTANTS_PARAM) {
 	if ($("#renameSDC").prop('checked') === true) {
 		if (driverName == CONSTANTS_PARAM.POWERFLEX){
-			$('div#SDC-prefix').show();
+			$('div#sdc-prefix').show();
 		}
 	} else {
-		$('div#SDC-prefix').hide();
+		$('div#sdc-prefix').hide();
 	}
 }
 
@@ -231,7 +231,7 @@ const resetSnapNamePrefix = csmMapValue => {
 }
 
 const resetSDCPrefix = csmMapValue => {
-	document.getElementById("SDC-prefix").value = String(csmMapValue.get("sdcPrefix"));
+	document.getElementById("sdc-prefix").value = String(csmMapValue.get("sdcPrefix"));
 }
 
 const resetNodeSelectorLabel = csmMapValue => {

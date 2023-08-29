@@ -126,7 +126,7 @@ function setValues(csmMapValues, CONSTANTS_PARAM) {
 	DriverValues.vSphereVCenterHost = $("#vSphere-vCenter-host").val();
 	DriverValues.vSphereVCenterCredSecret = $("#vSphere-vCenter-cred-secret").val();
 	DriverValues.renameSDC = $("#renameSDC").prop('checked') ? true : false;
-	DriverValues.sdcPrefix = document.getElementById("SDC-prefix").value;
+	DriverValues.sdcPrefix = document.getElementById("sdc-prefix").value;
 	DriverValues.approveSDC = $("#approveSDC").prop('checked') ? true : false;
 	return DriverValues
 }
