@@ -307,6 +307,8 @@ function displayModules(installationType, driverName, CONSTANTS_PARAM) {
 			$("#authorization").prop('checked', false);
 			$(".storage-capacity").show();
 			$(".resiliency").show();
+			$(".renameSDC-feature").hide();
+			$(".approveSDC").hide();
 			if (document.getElementById("csm-version").value !== "1.7.0") {
 				$(".max-volumes-per-node").show();
 			}
@@ -332,6 +334,8 @@ function displayModules(installationType, driverName, CONSTANTS_PARAM) {
 			$(".fsGroupPolicy").show();
 			$(".vgsnapshot").hide();
 			$(".storage-capacity").show();
+			$(".renameSDC-feature").hide();
+			$(".approveSDC").hide();
 			document.getElementById("driver-namespace").value = CONSTANTS_PARAM.POWERSCALE_NAMESPACE;
 			if (installationType === 'operator'){
 				$(".observability-operator").show();
@@ -360,6 +364,8 @@ function displayModules(installationType, driverName, CONSTANTS_PARAM) {
 			$(".replication-mod").show();
 			$(".iscsichap").show();
 			$(".transport-protocol").show();
+			$(".renameSDC-feature").hide();
+			$(".approveSDC").hide();
 			document.getElementById("driver-namespace").value = CONSTANTS_PARAM.POWERMAX_NAMESPACE;
 			if (installationType === CONSTANTS_PARAM.OPERATOR) {
 				
@@ -386,7 +392,9 @@ function displayModules(installationType, driverName, CONSTANTS_PARAM) {
 			$(".resiliency").show();
 			$(".cert-secret-count-wrapper").show();
 			$("div#snap-prefix").hide();
-			$(".storage-capacity").show();
+			$(".renameSDC-feature").show();
+			$(".renameSDC-feature").show();
+			$(".approveSDC").show();
 			if (document.getElementById("csm-version").value == "1.8.0") {
 				$(".max-volumes-per-node").show();
 			}
@@ -400,7 +408,9 @@ function displayModules(installationType, driverName, CONSTANTS_PARAM) {
 			$(".authorization").hide();
 			$(".fsGroupPolicy").show();	
 			$(".cert-manager").hide();
-			$(".storage-capacity").show();	
+			$(".storage-capacity").show();
+			$(".renameSDC-feature").hide();
+			$(".approveSDC").hide();
 			document.getElementById("driver-namespace").value = CONSTANTS_PARAM.UNITY_NAMESPACE;
 			break;
 	}
