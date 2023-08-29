@@ -530,6 +530,7 @@ if (typeof exports !== 'undefined') {
 		hideFields,
 		validateInput,
 		resetVolNamePrefix,
-		resetSnapNamePrefix
+		resetSnapNamePrefix,
+		resetSDCNamePrefix
 	};
 }
