@@ -238,6 +238,7 @@ csi-vxflexos:
     sidecarProxyImage: dellemc/csm-authorization-sidecar:v1.7.0
     proxyHost: $AUTHORIZATION_PROXY_HOST
     skipCertificateValidation: $AUTHORIZATION_SKIP_CERTIFICATE_VALIDATION
+  maxPowerflexVolumesPerNode: $MAX_VOLUMES_PER_NODE
 
 ## K8S/CSI-PowerScale ATTRIBUTES
 ##########################################
