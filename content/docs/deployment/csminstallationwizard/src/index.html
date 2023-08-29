@@ -353,14 +353,14 @@
                       <label for="renameSDC" class="form-check-label ms-2 text-dark" data-bs-toggle="tooltip" data-bs-placement="right" title="Enable/Disable Rename SDC feature.">Rename SDC</label>
                     </div>
                     <div class="was-validated row mt-3 child-level-one" id="SDC-prefix">
-                      <label for="SDC-prefix" class="col-sm-3 col-form-label" data-bs-toggle="tooltip" data-bs-placement="right" title="Prefix to apply to the names of a SDC">SDC Prefix</label>
+                      <label for="SDC-prefix" class="col-sm-3 col-form-label" data-bs-toggle="tooltip" data-bs-placement="right" title="Prefix to apply for a SDC name">SDC Prefix</label>
                       <div class="col-sm-9"></div>
                       <div class="col-sm-2">
-                        <input class="form-control input-lg" type="text" id="SDC-prefix" placeholder="sdc-test">
+                        <input class="form-control input-lg" type="text" id="SDC-prefix" placeholder="sdc-test" oninput="validateInput(validateForm, CONSTANTS)" required>
                       </div>
                       <div class="col-sm-4">
                         <div class="row mt-1">
-                          <a class="reset" id="reset-SDC-prefix" onclick="resetSnapNamePrefix(csmMap)">Reset to default</a>
+                          <a class="reset" id="reset-SDC-prefix" onclick="resetSDCNamePrefix(csmMap)">Reset to default</a>
                         </div>
                       </div>
                     </div>

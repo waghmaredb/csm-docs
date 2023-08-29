@@ -230,6 +230,10 @@ const resetSnapNamePrefix = csmMapValue => {
 	document.getElementById("snapshot-prefix").value = String(csmMapValue.get("snapNamePrefix"));
 }
 
+const resetSDCNamePrefix = csmMapValue => {
+	document.getElementById("SDC-prefix").value = String(csmMapValue.get("sdcPrefix"));
+}
+
 const resetNodeSelectorLabel = csmMapValue => {
 	document.getElementById("node-selector-label").value = String(csmMapValue.get("nodeSelectorLabel"));
 }
