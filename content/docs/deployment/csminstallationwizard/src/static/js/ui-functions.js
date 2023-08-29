@@ -54,6 +54,7 @@ function onArrayChange() {
 		onVSphereChange();
 		onReplicationChange(replicationNote);
 		validateInput(validateForm, CONSTANTS);
+		onRenameSDCChange(driver, CONSTANTS);
 	});
 }
 
@@ -175,6 +176,16 @@ function onNodeSelectorChange(nodeSelectorNoteValue, csmMapValue) {
 	} else {
 		document.getElementById('node-selector-label').value = "";
 		$(".node-sel-attributes").hide();
+	}
+}
+
+function onRenameSDCChange(driverName, CONSTANTS_PARAM) {
+	if ($("#renameSDC").prop('checked') === true) {
+		if (driverName == CONSTANTS_PARAM.POWERFLEX){
+			$('div#SDC-prefix').show();
+		}
+	} else {
+		$('div#SDC-prefix').hide();
 	}
 }
 
@@ -498,6 +509,7 @@ if (typeof exports !== 'undefined') {
 		onVSphereChange,
 		onNodeSelectorChange,
 		onCopyButtonClickHandler,
+		onRenameSDCChange,
 		resetImageRepository,
 		resetMaxVolumesPerNode,
 		resetControllerCount,
