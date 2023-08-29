@@ -361,6 +361,25 @@
                     </div>
                   </div>
 
+                  <div class="row mb-4 col-sm-11 renameSDC-feature">
+                    <div class="col-sm-12">
+                      <input class="form-check-input" type="checkbox" id="renameSDC" value="" onchange="onSnapshotChange(snapshotNote, driver, CONSTANTS)" checked>
+                      <label for="snapshot" class="form-check-label ms-2 text-dark" data-bs-toggle="tooltip" data-bs-placement="right" title="Enable/Disable Rename SDC feature." style="width: 180px;">Snapshot</label>
+                    </div>
+                    <div class="was-validated row mt-3 child-level-one" id="SDC-prefix">
+                      <label for="snapshot-prefix" class="col-sm-3 col-form-label" data-bs-toggle="tooltip" data-bs-placement="right" title="Prefix to apply to the names of a SDC">SDC Prefix</label>
+                      <div class="col-sm-9"></div>
+                      <div class="col-sm-2">
+                        <input class="form-control input-lg" type="text" id="SDC-prefix" placeholder="csi-snap" oninput="validateInput(validateForm, CONSTANTS)" required>
+                      </div>
+                      <div class="col-sm-4">
+                        <div class="row mt-1">
+                          <a class="reset" id="reset-SDC-prefix" onclick="resetSnapNamePrefix(csmMap)">Reset to default</a>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
                   <div class="was-validated row mb-4 max-volumes-per-node">
                     <label for="max-volumes-per-node" class="col-sm-2 col-form-label" data-bs-toggle="tooltip" data-bs-placement="right" title="Default value for maximum number of volumes that controller can publish to the node." style="width: 200px;">Max Volumes Per Node</label>
                     <div class="row">

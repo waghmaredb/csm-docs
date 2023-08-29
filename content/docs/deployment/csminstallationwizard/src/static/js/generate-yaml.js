@@ -125,6 +125,9 @@ function setValues(csmMapValues, CONSTANTS_PARAM) {
 	DriverValues.vSphereFCHostName = $("#vSphere-fc-host-name").val();
 	DriverValues.vSphereVCenterHost = $("#vSphere-vCenter-host").val();
 	DriverValues.vSphereVCenterCredSecret = $("#vSphere-vCenter-cred-secret").val();
+
+	DriverValues.renameSDC = $("#renameSDC").prop('checked') ? true : false;
+	DriverValues.snapNamePrefix = document.getElementById("snapshot-prefix").value;
 	return DriverValues
 }
 
