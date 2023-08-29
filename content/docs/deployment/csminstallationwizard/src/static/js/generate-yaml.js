@@ -127,7 +127,7 @@ function setValues(csmMapValues, CONSTANTS_PARAM) {
 	DriverValues.vSphereVCenterCredSecret = $("#vSphere-vCenter-cred-secret").val();
 
 	DriverValues.renameSDC = $("#renameSDC").prop('checked') ? true : false;
-	DriverValues.snapNamePrefix = document.getElementById("snapshot-prefix").value;
+	DriverValues.sdcPrefix = document.getElementById("SDC-prefix").value;
 	return DriverValues
 }
 
