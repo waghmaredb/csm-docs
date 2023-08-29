@@ -187,7 +187,7 @@ csi-vxflexos:
     nodeSelector: $NODE_POD_NODE_SELECTOR
     renameSDC:
       enabled: $RENAME_SDC_ENABLED
-      prefix: $SDC_PREFIX
+      sdcPrefix: $SDC_PREFIX
     approveSDC:
       enabled: $APPROVE_SDC_ENABLED
     tolerations: $NODE_TOLERATIONS
