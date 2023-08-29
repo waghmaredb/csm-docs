@@ -230,7 +230,7 @@ const resetSnapNamePrefix = csmMapValue => {
 	document.getElementById("snapshot-prefix").value = String(csmMapValue.get("snapNamePrefix"));
 }
 
-const resetSDCNamePrefix = csmMapValue => {
+const resetSDCPrefix = csmMapValue => {
 	document.getElementById("SDC-prefix").value = String(csmMapValue.get("sdcPrefix"));
 }
 
@@ -531,6 +531,6 @@ if (typeof exports !== 'undefined') {
 		validateInput,
 		resetVolNamePrefix,
 		resetSnapNamePrefix,
-		resetSDCNamePrefix
+		resetSDCPrefix
 	};
 }
