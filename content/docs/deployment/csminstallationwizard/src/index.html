@@ -412,10 +412,10 @@
                       <div class="col-sm-2">
                         <input class="form-control input-sm" type="text" id="nfsAcls" placeholder="0777" oninput="validateInput(validateForm, CONSTANTS)">
                       </div>
-                    </div>
-                    <div class="col-sm-4">
-                      <div class="row mt-1">
-                        <a class="reset" id="reset-nfsAcls" onclick="resetNfsAcls(csmMap)">Reset to default</a>
+                      <div class="col-sm-4">
+                        <div class="row mt-1">
+                          <a class="reset" id="reset-nfsAcls" onclick="resetNfsAcls(csmMap)">Reset to default</a>
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -431,7 +431,7 @@
 
                   <div class="row mb-4 enable-quota">
                     <div class="col-sm-12">
-                      <input class="form-check-input" type="checkbox" id="enable-quota" value="" checked>
+                      <input class="form-check-input" type="checkbox" id="enable-quota" value="">
                       <label for="enable-quota" class="form-check-label ms-2 text-dark" data-bs-toggle="tooltip" data-bs-placement="right" title="Enable/Disable quota limits for a newly provisioned NFS volume.">Quota</label>
                     </div>
                   </div>
