@@ -403,6 +403,41 @@
 
                   <hr>
                   <div class="row mb-3">
+                    <div class="col-sm-12 h6">NFS volume operations</div>
+                  </div>
+
+                  <div class="row mb-4 nfsAcls" id="nfsAcls">
+                    <label for="nfsAcls" class="col-sm-2 col-form-label" data-bs-toggle="tooltip" data-bs-placement="right" title="Defines permissions - POSIX mode bits or NFSv4 ACLs, to be set on NFS target mount directory." style="width: 200px;">NFS ACLs</label>
+                    <div class="row">
+                      <div class="col-sm-2">
+                        <input class="form-control input-sm" type="text" id="nfsAcls" placeholder="0777" oninput="validateInput(validateForm, CONSTANTS)">
+                      </div>
+                    </div>
+                    <div class="col-sm-4">
+                      <div class="row mt-1">
+                        <a class="reset" id="reset-nfsAcls" onclick="resetNfsAcls(csmMap)">Reset to default</a>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="row mb-4 nfsAcls" id="externalAccess">
+                    <label for="externalAccess" class="col-sm-2 col-form-label" data-bs-toggle="tooltip" data-bs-placement="right" title="Specify additional entries for host to access NFS volumes." style="width: 200px;">External Access</label>
+                    <div class="row">
+                      <div class="col-sm-2">
+                        <input class="form-control input-sm" type="text" id="externalAccess" oninput="validateInput(validateForm, CONSTANTS)">
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="row mb-4 enable-quota">
+                    <div class="col-sm-12">
+                      <input class="form-check-input" type="checkbox" id="enable-quota" value="" checked>
+                      <label for="enable-quota" class="form-check-label ms-2 text-dark" data-bs-toggle="tooltip" data-bs-placement="right" title="Enable/Disable quota limits for a newly provisioned NFS volume.">Quota</label>
+                    </div>
+                  </div>
+
+                  <hr>
+                  <div class="row mb-3">
                     <div class="col-sm-12 h5">Other configurations for installation</div>
                   </div>
 
