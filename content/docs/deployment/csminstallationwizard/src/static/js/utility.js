@@ -44,6 +44,9 @@ function validateForm(CONSTANTS_PARAM) {
 	const powermaxSelected = document.getElementById('array').value.trim() === CONSTANTS_PARAM.POWERMAX;
 	const vSphereEnabled = $("#vSphere").prop('checked') ? true : false;
 
+	const powerflexSelected = document.getElementById('array').value.trim() === CONSTANTS_PARAM.POWERFLEX;
+	const renameSDCEnabled = $("#renameSDC").prop('checked') ? true : false;
+
 	if (powermaxSelected) {
 		if (document.getElementById('installation-type').value === CONSTANTS_PARAM.HELM) {
 			if (document.getElementById('storage-array-id').value.trim() === "") {
@@ -77,6 +80,15 @@ function validateForm(CONSTANTS_PARAM) {
 			}
 			if (document.getElementById('vSphere-vCenter-cred-secret').value.trim() === "") {
 				return false;
+			}
+		}
+	}
+	if (powerflexSelected) {
+		if (document.getElementById('installation-type').value === CONSTANTS_PARAM.HELM) {
+			if (renameSDCEnabled) {
+				if (document.getElementById('sdc-prefix').value.trim() === "") {
+					return false;
+				}
 			}
 		}
 	}
@@ -115,6 +127,7 @@ function setDefaultValues(defaultValuesParam, csmMapValues) {
 	document.getElementById("vol-name-prefix").value = csmMapValues.get("volNamePrefix");
 	document.getElementById("snapshot-prefix").value = csmMapValues.get("snapNamePrefix");
 	document.getElementById("sdc-prefix").value = csmMapValues.get("sdcPrefix");
+	document.getElementById("nfsAcls").value = csmMapValues.get("nfsAcls");
 	document.getElementById("cert-secret-count").value = csmMapValues.get("certSecretCount");
 	document.getElementById("taint").value = csmMapValues.get("taint");
 	document.getElementById("poll-rate").value = csmMapValues.get("pollRate");
