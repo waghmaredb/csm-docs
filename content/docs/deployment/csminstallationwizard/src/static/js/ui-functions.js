@@ -234,7 +234,7 @@ const resetSDCPrefix = csmMapValue => {
 	document.getElementById("sdc-prefix").value = String(csmMapValue.get("sdcPrefix"));
 }
 
-const resetSDCPrefix = csmMapValue => {
+const resetNfsAcls = csmMapValue => {
 	document.getElementById("nfsAcls").value = String(csmMapValue.get("nfsAcls"));
 }
 
