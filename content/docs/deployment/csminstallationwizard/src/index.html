@@ -352,7 +352,7 @@
                       <input class="form-check-input" type="checkbox" id="renameSDC" value="" onchange="onRenameSDCChange(driver, CONSTANTS)">
                       <label for="renameSDC" class="form-check-label ms-2 text-dark" data-bs-toggle="tooltip" data-bs-placement="right" title="Enable/Disable Rename SDC feature.">Rename SDC</label>
                     </div>
-                    <div class="was-validated row mt-3 child-level-one" id="sdc-prefix">
+                    <div class="was-validated row mt-3 child-level-one sdc-prefix">
                       <label for="sdc-prefix" class="col-sm-3 col-form-label" data-bs-toggle="tooltip" data-bs-placement="right" title="Prefix to apply for a SDC name">SDC Prefix</label>
                       <div class="col-sm-9"></div>
                       <div class="col-sm-2">
@@ -406,7 +406,7 @@
                     <div class="col-sm-12 h6">NFS volume operations</div>
                   </div>
 
-                  <div class="row mb-4 nfsAcls" id="nfsAcls">
+                  <div class="row mb-4 nfsAcls">
                     <label for="nfsAcls" class="col-sm-2 col-form-label" data-bs-toggle="tooltip" data-bs-placement="right" title="Defines permissions - POSIX mode bits or NFSv4 ACLs, to be set on NFS target mount directory." style="width: 200px;">NFS ACLs</label>
                     <div class="row">
                       <div class="col-sm-2">
@@ -420,11 +420,11 @@
                     </div>
                   </div>
 
-                  <div class="row mb-4 nfsAcls" id="externalAccess">
+                  <div class="row mb-4 externalAccess">
                     <label for="externalAccess" class="col-sm-2 col-form-label" data-bs-toggle="tooltip" data-bs-placement="right" title="Specify additional entries for host to access NFS volumes." style="width: 200px;">External Access</label>
                     <div class="row">
                       <div class="col-sm-2">
-                        <input class="form-control input-sm" type="text" id="externalAccess"">
+                        <input class="form-control input-sm" type="text" id="externalAccess">
                       </div>
                     </div>
                   </div>
