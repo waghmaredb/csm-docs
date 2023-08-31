@@ -180,7 +180,7 @@ function onNodeSelectorChange(nodeSelectorNoteValue, csmMapValue) {
 }
 
 function onRenameSDCChange(driverName, CONSTANTS_PARAM) {
-	if ($("#renameSDC").prop('checked') === true) {
+	if ($("#rename-sdc").prop('checked') === true) {
 		if (driverName == CONSTANTS_PARAM.POWERFLEX){
 			$('div.sdc-prefix').show();
 		}
@@ -315,10 +315,9 @@ function displayModules(installationType, driverName, CONSTANTS_PARAM) {
 	$(".replication-operator-clusterid").hide();
 	$(".replication-helm-arrayid").hide();
 	$(".replication-helm-unisphere").hide();
-	$(".renameSDC-feature").hide();
-	$(".approveSDC").hide();
-	$(".nfsAcls").hide();
-	$(".externalAccess").hide();
+	$(".rename-sdc-feature").hide();
+	$(".approve-sdc").hide();
+	$(".nfs-acls").hide();
 	$(".enable-quota").hide();
 
 	switch (driverName) {
