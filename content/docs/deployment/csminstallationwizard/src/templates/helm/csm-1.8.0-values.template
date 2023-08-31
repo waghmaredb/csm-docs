@@ -213,6 +213,7 @@ csi-vxflexos:
   storageCapacity:
     enabled: $STORAGE_CAPACITY_ENABLED
   nfsAcls: $NFS_ACLS
+  externalAccess: $EXTERNAL_ACCESS
   enableQuota: $QUOTA_ENABLED
   monitor:
     enabled: $MONITOR_ENABLED

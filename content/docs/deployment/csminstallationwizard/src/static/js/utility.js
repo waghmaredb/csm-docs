@@ -45,7 +45,7 @@ function validateForm(CONSTANTS_PARAM) {
 	const vSphereEnabled = $("#vSphere").prop('checked') ? true : false;
 
 	const powerflexSelected = document.getElementById('array').value.trim() === CONSTANTS_PARAM.POWERFLEX;
-	const renameSDCEnabled = $("#rename-sdc").prop('checked') ? true : false;
+	const renameSDCEnabled = $("#renameSDC").prop('checked') ? true : false;
 
 	if (powermaxSelected) {
 		if (document.getElementById('installation-type').value === CONSTANTS_PARAM.HELM) {
@@ -126,7 +126,8 @@ function setDefaultValues(defaultValuesParam, csmMapValues) {
 	document.getElementById("controller-count").value = String(csmMapValues.get("controllerCount"));
 	document.getElementById("vol-name-prefix").value = csmMapValues.get("volNamePrefix");
 	document.getElementById("snapshot-prefix").value = csmMapValues.get("snapNamePrefix");
-	document.getElementById("nfs-acls").value = csmMapValues.get("nfsAcls");
+	document.getElementById("sdc-prefix").value = csmMapValues.get("sdcPrefix");
+	document.getElementById("nfsAcls").value = csmMapValues.get("nfsAcls");
 	document.getElementById("cert-secret-count").value = csmMapValues.get("certSecretCount");
 	document.getElementById("taint").value = csmMapValues.get("taint");
 	document.getElementById("poll-rate").value = csmMapValues.get("pollRate");

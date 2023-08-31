@@ -180,7 +180,7 @@ function onNodeSelectorChange(nodeSelectorNoteValue, csmMapValue) {
 }
 
 function onRenameSDCChange(driverName, CONSTANTS_PARAM) {
-	if ($("#rename-sdc").prop('checked') === true) {
+	if ($("#renameSDC").prop('checked') === true) {
 		if (driverName == CONSTANTS_PARAM.POWERFLEX){
 			$('div.sdc-prefix').show();
 		}
@@ -230,8 +230,12 @@ const resetSnapNamePrefix = csmMapValue => {
 	document.getElementById("snapshot-prefix").value = String(csmMapValue.get("snapNamePrefix"));
 }
 
+const resetSDCPrefix = csmMapValue => {
+	document.getElementById("sdc-prefix").value = String(csmMapValue.get("sdcPrefix"));
+}
+
 const resetNfsAcls = csmMapValue => {
-	document.getElementById("nfs-acls").value = String(csmMapValue.get("nfsAcls"));
+	document.getElementById("nfsAcls").value = String(csmMapValue.get("nfsAcls"));
 }
 
 const resetNodeSelectorLabel = csmMapValue => {
@@ -315,9 +319,10 @@ function displayModules(installationType, driverName, CONSTANTS_PARAM) {
 	$(".replication-operator-clusterid").hide();
 	$(".replication-helm-arrayid").hide();
 	$(".replication-helm-unisphere").hide();
-	$(".rename-sdc-feature").hide();
-	$(".approve-sdc").hide();
-	$(".nfs-acls").hide();
+	$(".renameSDC-feature").hide();
+	$(".approveSDC").hide();
+	$(".nfsAcls").hide();
+	$(".externalAccess").hide();
 	$(".enable-quota").hide();
 
 	switch (driverName) {
@@ -405,11 +410,12 @@ function displayModules(installationType, driverName, CONSTANTS_PARAM) {
 			$(".resiliency").show();
 			$(".cert-secret-count-wrapper").show();
 			$("div#snap-prefix").hide();
-			$(".rename-sdc-feature").show();
-			$(".approve-sdc").show();
+			$(".renameSDC-feature").show();
+			$(".approveSDC").show();
 			if (document.getElementById("csm-version").value == "1.8.0") {
 				$(".max-volumes-per-node").show();
-				$(".nfs-acls").show();
+				$(".nfsAcls").show();
+				$(".externalAccess").show();
 				$(".enable-quota").show();
 			}
 			document.getElementById("driver-namespace").value = CONSTANTS_PARAM.POWERFLEX_NAMESPACE;
@@ -528,6 +534,6 @@ if (typeof exports !== 'undefined') {
 		validateInput,
 		resetVolNamePrefix,
 		resetSnapNamePrefix,
-		resetNfsAcls
+		resetSDCPrefix
 	};
 }
