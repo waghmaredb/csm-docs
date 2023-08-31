@@ -230,12 +230,8 @@ const resetSnapNamePrefix = csmMapValue => {
 	document.getElementById("snapshot-prefix").value = String(csmMapValue.get("snapNamePrefix"));
 }
 
-const resetSDCPrefix = csmMapValue => {
-	document.getElementById("sdc-prefix").value = String(csmMapValue.get("sdcPrefix"));
-}
-
 const resetNfsAcls = csmMapValue => {
-	document.getElementById("nfsAcls").value = String(csmMapValue.get("nfsAcls"));
+	document.getElementById("nfs-acls").value = String(csmMapValue.get("nfsAcls"));
 }
 
 const resetNodeSelectorLabel = csmMapValue => {
@@ -410,12 +406,11 @@ function displayModules(installationType, driverName, CONSTANTS_PARAM) {
 			$(".resiliency").show();
 			$(".cert-secret-count-wrapper").show();
 			$("div#snap-prefix").hide();
-			$(".renameSDC-feature").show();
-			$(".approveSDC").show();
+			$(".rename-sdc-feature").show();
+			$(".approve-sdc").show();
 			if (document.getElementById("csm-version").value == "1.8.0") {
 				$(".max-volumes-per-node").show();
-				$(".nfsAcls").show();
-				$(".externalAccess").show();
+				$(".nfs-acls").show();
 				$(".enable-quota").show();
 			}
 			document.getElementById("driver-namespace").value = CONSTANTS_PARAM.POWERFLEX_NAMESPACE;
@@ -534,6 +529,6 @@ if (typeof exports !== 'undefined') {
 		validateInput,
 		resetVolNamePrefix,
 		resetSnapNamePrefix,
-		resetSDCPrefix
+		resetNfsAcls
 	};
 }
