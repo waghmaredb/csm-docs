@@ -125,12 +125,10 @@ function setValues(csmMapValues, CONSTANTS_PARAM) {
 	DriverValues.vSphereFCHostName = $("#vSphere-fc-host-name").val();
 	DriverValues.vSphereVCenterHost = $("#vSphere-vCenter-host").val();
 	DriverValues.vSphereVCenterCredSecret = $("#vSphere-vCenter-cred-secret").val();
-	DriverValues.renameSDC = $("#renameSDC").prop('checked') ? true : false;
+	DriverValues.renameSDC = $("#rename-sdc").prop('checked') ? true : false;
 	DriverValues.sdcPrefix = $("#sdc-prefix").val();
-	// DriverValues.sdcPrefix = document.getElementById("sdc-prefix").value;
-	DriverValues.approveSDC = $("#approveSDC").prop('checked') ? true : false;
-    DriverValues.nfsAcls = document.getElementById("nfsAcls").value;
-    DriverValues.externalAccess = document.getElementById("externalAccess").value;
+	DriverValues.approveSDC = $("#approve-sdc").prop('checked') ? true : false;
+    DriverValues.nfsAcls = $("#nfs-acls").value;
     DriverValues.enableQuota = $("#enable-quota").prop('checked') ? true : false;
 	return DriverValues
 }
@@ -193,7 +191,6 @@ function createYamlString(yamlTpl, yamlTplValues, driverParam, CONSTANTS_PARAM) 
 	yamlTpl = yamlTpl.replaceAll("$SDC_PREFIX", yamlTplValues.sdcPrefix);
 	yamlTpl = yamlTpl.replaceAll("$APPROVE_SDC_ENABLED", yamlTplValues.approveSDC);
 	yamlTpl = yamlTpl.replaceAll("$NFS_ACLS", yamlTplValues.nfsAcls);
-	yamlTpl = yamlTpl.replaceAll("$EXTERNAL_ACCESS", yamlTplValues.externalAccess);
 	yamlTpl = yamlTpl.replaceAll("$QUOTA_ENABLED", yamlTplValues.enableQuota);
 
 
